@@ -6,169 +6,15 @@
 ![Accessibility](https://img.shields.io/badge/Accessibility-First-success)
 ![Framework](https://img.shields.io/badge/Framework-Agnostic-0F172A)
 
-A lightweight, framework-agnostic TypeScript library for rendering accessible and customizable HTML forms from declarative JSON schemas.
+Framework-agnostic TypeScript runtime for rendering accessible, customizable HTML forms from declarative JSON schemas.
 
-The project is designed for enterprise and legacy-friendly environments where introducing React, Angular, or Vue is not always possible or desirable, but accessibility, validation, maintainability, and developer experience remain important.
+The project is designed for enterprise and legacy-friendly frontend applications where React, Angular, or Vue cannot always be introduced, but maintainability, accessibility, validation, customization, and integration quality still matter.
 
----
+## Why Framework-Agnostic
 
-## Why this project exists
+Large organizations often run a mix of server-rendered pages, legacy scripts, micro-frontends, and modern framework applications. A form runtime with no framework dependency can be embedded into those environments while preserving a consistent schema model, validation behavior, and accessibility baseline.
 
-Many frontend form solutions are tightly coupled to a specific framework.
-
-In real-world enterprise environments, teams often need to:
-
-* integrate forms into legacy applications
-* progressively modernize large codebases
-* embed forms into server-rendered pages
-* support multiple frontend stacks
-* maintain accessibility and validation standards
-* avoid framework lock-in
-
-This project explores a different approach:
-
-> A framework-independent form runtime that transforms declarative schemas into accessible HTML while providing validation, state management, conditional logic, and customization capabilities.
-
----
-
-## Key Features
-
-### Schema-Driven Forms
-
-Define forms using declarative JSON schemas.
-
-Supported field types:
-
-* Text
-* Email
-* Number
-* Password
-* Textarea
-* Select
-* Checkbox
-* Radio
-
-Additional capabilities:
-
-* Form sections
-* Grouped fields
-* Labels
-* Placeholders
-* Help text
-* Required fields
-* Disabled fields
-* Readonly fields
-* Initial values
-
----
-
-### Validation
-
-Built-in validation support:
-
-* Required
-* Min length
-* Max length
-* Min value
-* Max value
-* Pattern matching
-* Email validation
-
-Additional features:
-
-* Custom validators
-* Field-level errors
-* Form-level error summary
-* Accessible validation feedback
-
----
-
-### Form State Management
-
-The runtime tracks:
-
-* Current values
-* Initial values
-* Dirty fields
-* Touched fields
-* Validation state
-* Field errors
-
-Public APIs support:
-
-* Value retrieval
-* Value updates
-* Validation
-* Reset
-* Cleanup and unmount
-
----
-
-### Conditional Logic
-
-Simple declarative conditional visibility.
-
-Example:
-
-```ts
-{
-  type: "text",
-  name: "companyName",
-  label: "Company Name",
-  visibleWhen: {
-    field: "accountType",
-    equals: "enterprise"
-  }
-}
-```
-
-Supported operators:
-
-* equals
-* notEquals
-* includes
-* exists
-
-The project intentionally avoids becoming a full rules engine.
-
----
-
-### Customization
-
-Designed for integration into existing design systems.
-
-Customization options include:
-
-* CSS variables
-* Stable CSS class names
-* Configurable class prefix
-* Custom renderer registry
-* Event hooks
-
-Supported hooks:
-
-* onChange
-* onSubmit
-* onValidationError
-* onReset
-
----
-
-### Accessibility
-
-Accessibility is a first-class requirement.
-
-Implemented features include:
-
-* Proper label/input associations
-* Stable generated IDs
-* aria-invalid support
-* aria-describedby support
-* Keyboard-friendly controls
-* Accessible error summary
-* Error navigation and focus management
-
----
+The core package renders native HTML controls into a provided container element. It does not ship a visual form builder, virtual DOM, generic rules engine, or framework clone.
 
 ## Installation
 
@@ -176,22 +22,29 @@ Implemented features include:
 npm install form-schema-runtime
 ```
 
----
+Import the runtime and CSS:
+
+```ts
+import { createForm } from "form-schema-runtime";
+import "form-schema-runtime/styles.css";
+```
 
 ## Quick Start
 
 ```ts
-import { createForm } from "form-schema-runtime";
+import { createForm, type FormSchema } from "form-schema-runtime";
+import "form-schema-runtime/styles.css";
 
-const schema = {
-  id: "customer-form",
-  title: "Customer Form",
+const schema: FormSchema = {
+  id: "customer-onboarding",
+  title: "Customer onboarding",
   fields: [
     {
       type: "text",
       name: "firstName",
-      label: "First Name",
-      required: true
+      label: "First name",
+      required: true,
+      minLength: 2
     },
     {
       type: "email",
@@ -211,32 +64,70 @@ const form = createForm({
 });
 ```
 
----
-
-## Example Schema
+## Public API
 
 ```ts
-const schema = {
-  id: "enterprise-access-request",
-  title: "Enterprise Access Request",
+const form = createForm({
+  container,
+  schema,
+  initialValues,
+  classPrefix: "fsr",
+  validators: {
+    taxCode: customTaxCodeValidator
+  },
+  renderers: {
+    money: customMoneyRenderer
+  },
+  onChange(values, state) {},
+  onSubmit(values, state) {},
+  onValidationError(errors, state) {},
+  onReset(state) {}
+});
 
+form.getValues();
+form.setValues({ firstName: "Ada" });
+form.validate();
+form.reset();
+form.destroy();
+```
+
+Only the stable API is exported from `src/index.ts`. Internal modules remain separated for testability, but consumers should treat them as implementation details.
+
+## Schema Model
+
+Supported built-in field types:
+
+- `text`
+- `email`
+- `number`
+- `password`
+- `textarea`
+- `select`
+- `checkbox`
+- `radio`
+
+Schemas support sections, labels, placeholders, help text, disabled and readonly controls, required fields, options, initial values, validation rules, and simple conditional visibility.
+
+```ts
+const schema: FormSchema = {
+  id: "enterprise-access-request",
+  title: "Enterprise access request",
   fields: [
     {
       type: "select",
       name: "accountType",
-      label: "Account Type",
+      label: "Account type",
       required: true,
       options: [
         { value: "standard", label: "Standard" },
         { value: "enterprise", label: "Enterprise" }
       ]
     },
-
     {
       type: "text",
       name: "companyName",
-      label: "Company Name",
-
+      label: "Company name",
+      required: true,
       visibleWhen: {
         field: "accountType",
         equals: "enterprise"
@@ -246,303 +137,191 @@ const schema = {
 };
 ```
 
----
+## Validation
 
-## Public API
+Built-in validation is deterministic and independent from rendering:
 
-Example usage:
-
-```ts
-const form = createForm({
-  container,
-  schema,
-  initialValues,
-  validators,
-  renderers,
-  onChange,
-  onSubmit,
-  onValidationError,
-  onReset
-});
-```
-
-Available methods:
+- `required`
+- `minLength`
+- `maxLength`
+- `min`
+- `max`
+- `pattern`
+- email validation for `email` fields
+- synchronous custom validators by name
 
 ```ts
-form.getValues();
-form.setValues(values);
-
-form.validate();
-
-form.reset();
-
-form.destroy();
-```
-
-The public API is intentionally small and stable.
-
----
-
-## Architecture Overview
-
-The runtime is organized into independent modules:
-
-```txt
-schema/
-validation/
-state/
-conditions/
-renderer/
-dom/
-styles/
-```
-
-Key design goals:
-
-* Separation of concerns
-* Testability
-* Minimal public surface area
-* No framework dependency
-* Security-conscious DOM rendering
-
----
-
-## Security Considerations
-
-Schema content should be treated as untrusted input.
-
-The runtime:
-
-* Avoids arbitrary code execution
-* Avoids JavaScript expression evaluation
-* Avoids `eval`
-* Avoids `Function` constructors
-* Avoids unsafe DOM injection
-
-User-provided content is rendered through safe DOM APIs rather than direct HTML injection.
-
----
-
-## Accessibility Strategy
-
-The project follows accessibility-first principles.
-
-Highlights:
-
-* Labels are never replaced by placeholders.
-* Validation errors are announced and linked.
-* Error summaries provide direct navigation.
-* Native HTML controls are preferred whenever possible.
-* Keyboard workflows remain fully supported.
-
-Accessibility is validated through both automated and manual testing.
-
----
-
-## Custom Validators
-
-Example:
-
-```ts
-const taxCodeValidator = (value) => {
+const taxCodeValidator: CustomValidator = (value) => {
   if (!value) {
     return null;
   }
 
-  return value.length !== 16
-    ? "Tax code must contain 16 characters"
-    : null;
+  return String(value).length === 16 ? null : "Tax code must contain 16 characters.";
 };
 ```
 
-```ts
-createForm({
-  container,
-  schema,
-  validators: {
-    taxCode: taxCodeValidator
-  }
-});
-```
-
-Additional examples are available under:
-
-```txt
-docs/examples/custom-validators.md
-```
-
----
+More examples are in [docs/examples/custom-validators.md](docs/examples/custom-validators.md).
 
 ## Custom Renderers
 
-Custom renderers allow consumers to extend supported field types without modifying the core runtime.
+Custom field types can be registered without introducing a plugin lifecycle:
 
-Example use cases:
+```ts
+const moneyRenderer: FieldRenderer = (context) => {
+  const input = document.createElement("input");
+  input.id = context.inputId;
+  input.name = context.field.name;
+  input.type = "number";
+  input.value = context.value == null ? "" : String(context.value);
+  input.setAttribute("aria-invalid", context.errors.length > 0 ? "true" : "false");
 
-* Currency fields
-* Phone fields
-* Date pickers
-* Enterprise-specific controls
+  context.events.listen(input, "input", () => {
+    context.setValue(input.value === "" ? null : Number(input.value));
+  });
 
-Additional examples are available under:
-
-```txt
-docs/examples/custom-renderers.md
+  return input;
+};
 ```
 
----
+More examples are in [docs/examples/custom-renderers.md](docs/examples/custom-renderers.md).
 
-## Demo Application
+## Accessibility
 
-The repository includes a Vite-powered demo application featuring:
+The runtime uses native form controls and implements practical accessibility behavior:
 
-### Customer Onboarding
+- Label/input association.
+- Stable generated IDs.
+- `aria-invalid` for invalid fields.
+- `aria-describedby` for help and error text.
+- Form-level error summary.
+- Error summary links focus invalid controls.
+- Required fields are represented in text and native control attributes.
+- Placeholders are never used as label replacements.
 
-Typical customer registration workflow.
+## Security
 
-### Enterprise Access Request
+Schemas are treated as untrusted data. Schema-provided labels, help text, placeholders, option labels, validation messages, and error summary text are rendered with DOM APIs and `textContent`, not `innerHTML`.
 
-Internal access provisioning scenario.
+The runtime does not execute schema-provided code, does not evaluate JavaScript strings, does not use `eval`, and does not use the `Function` constructor. Schema attributes are explicitly handled rather than blindly copied to DOM nodes.
 
-### Payment Details
+## Architecture
 
-Mock payment form demonstrating validation and conditional behavior.
+```txt
+src/
+  index.ts
+  schema/
+  validation/
+  state/
+  conditions/
+  renderer/
+  dom/
+  styles/
+```
 
-The demo also includes:
+Responsibilities are intentionally small:
 
-* Live schema visualization
-* Form state inspection
-* Dark mode
-* Accessibility demonstrations
+- Schema normalization validates duplicate field names and derives field maps.
+- Validation runs independently from DOM rendering.
+- State tracks values, touched fields, dirty fields, and errors.
+- Conditions support simple declarative visibility only.
+- Renderers create explicit DOM nodes and clean up event listeners on destroy.
 
----
+The core design decision is documented in [docs/adr/0001-framework-agnostic-typescript-core.md](docs/adr/0001-framework-agnostic-typescript-core.md).
+
+## Demo
+
+Run the Vite demo:
+
+```bash
+npm run dev
+```
+
+The demo includes:
+
+- Customer onboarding form.
+- Enterprise access request form.
+- Payment details mock form.
+- Live schema, state, and errors.
+- Dark mode through CSS variables.
+- Custom `money` renderer.
+
+Build the static demo for GitHub Pages:
+
+```bash
+npm run build:demo
+```
+
+The output is written to `dist-demo`.
+
+## Build Output
+
+The package builds:
+
+- ESM: `dist/form-schema-runtime.js`
+- IIFE: `dist/form-schema-runtime.iife.js`
+- CSS: `dist/form-schema-runtime.css`
+- Declarations: `dist/types`
+
+The IIFE build exposes `FormSchemaRuntime`.
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run build:lib
+npm run build:demo
+npm run typecheck
+npm run lint
+npm test
+npm run test:watch
+npm run test:e2e
+npm run test:e2e:ui
+npm run preview
+```
 
 ## Testing Strategy
 
-### Unit Tests
+Unit tests use Vitest and jsdom. Coverage includes schema normalization, validators, custom validators, state tracking, reset behavior, conditional logic, renderer registry behavior, DOM rendering, and accessibility attributes where practical.
 
-Implemented with Vitest.
-
-Coverage includes:
-
-* Schema normalization
-* Validation
-* State management
-* Conditional logic
-* Renderer registry
-* DOM rendering behavior
-
----
-
-### End-to-End Tests
-
-Implemented with Playwright.
-
-Coverage includes:
-
-* Form rendering
-* Validation flows
-* Conditional visibility
-* Error summary behavior
-* Reset functionality
-* Demo interactions
-
----
-
-### Accessibility-Oriented Testing
-
-Where practical, tests verify:
-
-* Label associations
-* aria-invalid state
-* aria-describedby references
-* Error summary navigation
-
----
+Playwright E2E tests cover demo loading, schema switching, required validation, error summary focus, conditional fields, reset, dark mode, and basic keyboard navigation.
 
 ## CI/CD
 
-GitHub Actions pipeline:
+GitHub Actions runs a simple verification pipeline:
 
 ```txt
-Install
-→ Type Check
-→ Lint
-→ Unit Tests
-→ Build
-→ Playwright Tests
+checkout
+setup Node
+npm ci
+typecheck
+lint
+unit tests
+build library
+build demo
+install Playwright browsers
+Playwright tests
 ```
 
-The workflow intentionally remains simple and focused.
-
-No unnecessary matrix builds are included.
-
----
-
-## ADRs
-
-Architecture decisions are documented in:
-
-```txt
-docs/adr/
-```
-
-Included:
-
-```txt
-0001-framework-agnostic-typescript-core.md
-```
-
-Topics covered:
-
-* Framework independence
-* TypeScript strict mode
-* DOM rendering approach
-* Architectural trade-offs
-
----
+No generated coverage reports are committed.
 
 ## Trade-Offs
 
-This project intentionally does not support:
+This v1 intentionally does not include:
 
-* Visual form builders
-* Drag-and-drop editors
-* Arbitrary JavaScript expressions
-* Full rules engines
-* Complex workflow engines
-* Nested repeatable array fields
-* Framework-specific abstractions
+- Drag-and-drop visual builders.
+- Arbitrary JavaScript expressions inside schemas.
+- A generic rules engine.
+- Repeatable or nested array forms.
+- Async validation.
+- Framework-specific adapters.
 
-The objective is to remain lightweight, understandable, and maintainable.
-
----
+Those features are possible future additions, but each would need to preserve the small API and predictable runtime model.
 
 ## Roadmap
 
-Potential future improvements:
-
-* Async validation
-* Internationalization support
-* Schema versioning
-* Additional built-in field types
-* Framework adapters (React, Angular, Vue)
-* Design-system integration examples
-
-Future features will be evaluated carefully to avoid unnecessary complexity.
-
----
-
-## Technical Goals
-
-This repository is intended as a frontend engineering portfolio project focused on:
-
-* TypeScript architecture
-* Accessibility
-* Form runtime design
-* State management
-* Validation systems
-* Framework-agnostic development
-* Enterprise frontend engineering practices
-
-The emphasis is on maintainability, API design, and long-term sustainability rather than feature quantity.
+- Internationalized validation messages.
+- Optional async validation with a contained API.
+- Additional built-in field types.
+- Schema versioning guidance.
+- Thin framework adapters that wrap the core instead of changing it.

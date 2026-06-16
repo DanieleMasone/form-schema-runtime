@@ -1,0 +1,254 @@
+import type {
+  FieldValue,
+  FormStateSnapshot,
+  NormalizedField,
+  NormalizedFormSchema
+} from "../schema/types";
+import { createElement } from "../dom/createElement";
+import { createErrorDomId, createFieldDomId, createHelpDomId } from "../dom/ids";
+import type { EventRegistry } from "../dom/events";
+
+export interface FieldRenderContext {
+  field: NormalizedField;
+  schema: NormalizedFormSchema;
+  state: FormStateSnapshot;
+  classPrefix: string;
+  inputId: string;
+  helpId: string;
+  errorId: string;
+  describedBy: string;
+  value: FieldValue;
+  errors: string[];
+  events: EventRegistry;
+  setValue(value: FieldValue): void;
+  markTouched(): void;
+}
+
+export type FieldRenderer = (context: FieldRenderContext) => HTMLElement;
+
+function commonAttributes(context: FieldRenderContext): Record<string, string | boolean | undefined> {
+  const { field, inputId, describedBy, errors } = context;
+
+  return {
+    id: inputId,
+    name: field.name,
+    disabled: field.disabled ?? false,
+    readonly: field.readonly && !["select", "checkbox", "radio"].includes(field.type),
+    required: field.required ?? false,
+    "aria-invalid": errors.length > 0 ? "true" : "false",
+    "aria-describedby": describedBy || undefined
+  };
+}
+
+function createFieldShell(context: FieldRenderContext): HTMLDivElement {
+  const { classPrefix, errors, errorId, field, helpId, inputId } = context;
+  const shell = createElement("div", {
+    className: `${classPrefix}-field ${errors.length > 0 ? `${classPrefix}-field--invalid` : ""}`
+  });
+  const label = createElement("label", {
+    className: `${classPrefix}-label`,
+    text: field.required ? `${field.label} *` : field.label,
+    attributes: { for: inputId }
+  });
+
+  shell.append(label);
+
+  if (field.helpText) {
+    shell.append(
+      createElement("p", {
+        className: `${classPrefix}-help`,
+        text: field.helpText,
+        attributes: { id: helpId }
+      })
+    );
+  }
+
+  if (errors.length > 0) {
+    shell.append(
+      createElement("p", {
+        className: `${classPrefix}-error`,
+        text: errors[0],
+        attributes: { id: errorId, role: "alert" }
+      })
+    );
+  }
+
+  return shell;
+}
+
+function normalizeInputValue(value: FieldValue): string {
+  return value === undefined || value === null ? "" : String(value);
+}
+
+function readInputValue(input: HTMLInputElement): FieldValue {
+  if (input.type === "number") {
+    return input.value === "" ? null : Number(input.value);
+  }
+
+  if (input.type === "checkbox") {
+    return input.checked;
+  }
+
+  return input.value;
+}
+
+function renderInput(context: FieldRenderContext, inputType: string): HTMLElement {
+  const shell = createFieldShell(context);
+  const input = createElement("input", {
+    className: `${context.classPrefix}-control`,
+    attributes: {
+      ...commonAttributes(context),
+      type: inputType,
+      placeholder: context.field.placeholder
+    }
+  });
+
+  if (inputType === "checkbox") {
+    input.checked = context.value === true;
+  } else {
+    input.value = normalizeInputValue(context.value);
+  }
+
+  context.events.listen(input, "input", () => context.setValue(readInputValue(input)));
+  context.events.listen(input, "blur", () => context.markTouched());
+  shell.insertBefore(input, shell.querySelector(`.${context.classPrefix}-error`));
+  return shell;
+}
+
+function renderTextarea(context: FieldRenderContext): HTMLElement {
+  const shell = createFieldShell(context);
+  const textarea = createElement("textarea", {
+    className: `${context.classPrefix}-control`,
+    attributes: {
+      ...commonAttributes(context),
+      placeholder: context.field.placeholder,
+      rows: "4"
+    }
+  });
+
+  textarea.value = normalizeInputValue(context.value);
+  context.events.listen(textarea, "input", () => context.setValue(textarea.value));
+  context.events.listen(textarea, "blur", () => context.markTouched());
+  shell.insertBefore(textarea, shell.querySelector(`.${context.classPrefix}-error`));
+  return shell;
+}
+
+function renderSelect(context: FieldRenderContext): HTMLElement {
+  const shell = createFieldShell(context);
+  const select = createElement("select", {
+    className: `${context.classPrefix}-control`,
+    attributes: commonAttributes(context)
+  });
+  const placeholder = createElement("option", { text: "Select an option", attributes: { value: "" } });
+  select.append(placeholder);
+
+  context.field.options?.forEach((option) => {
+    const optionElement = createElement("option", {
+      text: option.label,
+      attributes: { value: String(option.value) }
+    });
+
+    optionElement.selected = String(option.value) === normalizeInputValue(context.value);
+    select.append(optionElement);
+  });
+
+  select.value = normalizeInputValue(context.value);
+  context.events.listen(select, "change", () => context.setValue(select.value));
+  context.events.listen(select, "blur", () => context.markTouched());
+  shell.insertBefore(select, shell.querySelector(`.${context.classPrefix}-error`));
+  return shell;
+}
+
+function renderRadio(context: FieldRenderContext): HTMLElement {
+  const shell = createFieldShell(context);
+  const group = createElement("div", {
+    className: `${context.classPrefix}-radio-group`,
+    attributes: {
+      role: "radiogroup",
+      "aria-labelledby": `${context.inputId}-legend`,
+      "aria-describedby": context.describedBy || undefined
+    }
+  });
+  const label = shell.querySelector("label");
+
+  if (label) {
+    label.id = `${context.inputId}-legend`;
+    label.removeAttribute("for");
+  }
+
+  context.field.options?.forEach((option, index) => {
+    const optionId = `${context.inputId}-${index}`;
+    const optionShell = createElement("div", { className: `${context.classPrefix}-choice` });
+    const input = createElement("input", {
+      className: `${context.classPrefix}-choice-input`,
+      attributes: {
+        id: optionId,
+        name: context.field.name,
+        type: "radio",
+        value: String(option.value),
+        disabled: context.field.disabled ?? false,
+        required: context.field.required ?? false,
+        "aria-invalid": context.errors.length > 0 ? "true" : "false"
+      }
+    });
+    const choiceLabel = createElement("label", {
+      className: `${context.classPrefix}-choice-label`,
+      text: option.label,
+      attributes: { for: optionId }
+    });
+
+    input.checked = String(option.value) === normalizeInputValue(context.value);
+    context.events.listen(input, "change", () => context.setValue(String(option.value)));
+    context.events.listen(input, "blur", () => context.markTouched());
+    optionShell.append(input, choiceLabel);
+    group.append(optionShell);
+  });
+
+  shell.insertBefore(group, shell.querySelector(`.${context.classPrefix}-error`));
+  return shell;
+}
+
+export const builtInRenderers: Record<string, FieldRenderer> = {
+  text: (context) => renderInput(context, "text"),
+  email: (context) => renderInput(context, "email"),
+  number: (context) => renderInput(context, "number"),
+  password: (context) => renderInput(context, "password"),
+  checkbox: (context) => renderInput(context, "checkbox"),
+  textarea: renderTextarea,
+  select: renderSelect,
+  radio: renderRadio
+};
+
+export function createDefaultFieldContext(
+  field: NormalizedField,
+  schema: NormalizedFormSchema,
+  state: FormStateSnapshot,
+  classPrefix: string,
+  events: EventRegistry,
+  setValue: (fieldName: string, value: FieldValue) => void,
+  markTouched: (fieldName: string) => void
+): FieldRenderContext {
+  const inputId = createFieldDomId(schema.id, field.name, classPrefix);
+  const helpId = createHelpDomId(inputId);
+  const errorId = createErrorDomId(inputId);
+  const errors = state.errors[field.name] ?? [];
+  const describedBy = [field.helpText ? helpId : "", errors.length > 0 ? errorId : ""]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    field,
+    schema,
+    state,
+    classPrefix,
+    inputId,
+    helpId,
+    errorId,
+    describedBy,
+    value: state.values[field.name],
+    errors,
+    events,
+    setValue: (value) => setValue(field.name, value),
+    markTouched: () => markTouched(field.name)
+  };
+}

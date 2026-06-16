@@ -1,0 +1,61 @@
+{
+  "name": "form-schema-runtime",
+  "version": "0.1.0",
+  "description": "Framework-agnostic TypeScript runtime for rendering accessible HTML forms from declarative schemas.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Daniele Masone",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/form-schema-runtime.js",
+  "module": "./dist/form-schema-runtime.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/form-schema-runtime.js",
+      "default": "./dist/form-schema-runtime.js"
+    },
+    "./styles.css": "./dist/form-schema-runtime.css"
+  },
+  "unpkg": "./dist/form-schema-runtime.iife.js",
+  "jsdelivr": "./dist/form-schema-runtime.iife.js",
+  "scripts": {
+    "dev": "vite --config vite.demo.config.ts",
+    "build": "npm run build:lib && npm run build:demo",
+    "build:lib": "vite build --config vite.config.ts && tsc -p tsconfig.build.json",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "eslint .",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "preview": "vite preview --config vite.demo.config.ts"
+  },
+  "keywords": [
+    "forms",
+    "schema",
+    "typescript",
+    "accessibility",
+    "framework-agnostic"
+  ],
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "@playwright/test": "^1.52.0",
+    "@types/node": "^22.15.32",
+    "eslint": "^9.29.0",
+    "globals": "^16.2.0",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
+  }
+}
