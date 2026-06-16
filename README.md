@@ -10,6 +10,10 @@ Framework-agnostic TypeScript runtime for rendering accessible, customizable HTM
 
 The project is designed for enterprise and legacy-friendly frontend applications where React, Angular, or Vue cannot always be introduced, but maintainability, accessibility, validation, customization, and integration quality still matter.
 
+Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
+
+Generated API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
+
 ## Why Framework-Agnostic
 
 Large organizations often run a mix of server-rendered pages, legacy scripts, micro-frontends, and modern framework applications. A form runtime with no framework dependency can be embedded into those environments while preserving a consistent schema model, validation behavior, and accessibility baseline.
@@ -185,6 +189,16 @@ const moneyRenderer: FieldRenderer = (context) => {
 
 More examples are in [docs/examples/custom-renderers.md](docs/examples/custom-renderers.md).
 
+## Extension Points
+
+The v1 extension surface is intentionally small:
+
+- Register synchronous validators by name through `validators`.
+- Register custom field renderers by field type through `renderers`.
+- Customize styling with CSS variables and a stable class prefix.
+
+Schemas do not contain executable JavaScript. Async validation, framework adapters, schema versioning machinery, and a generic rules engine are outside the current runtime.
+
 ## Accessibility
 
 The runtime uses native form controls and implements practical accessibility behavior:
@@ -244,14 +258,25 @@ The demo includes:
 - Live schema, state, and errors.
 - Dark mode through CSS variables.
 - Custom `money` renderer.
+- Links to GitHub, generated API docs, and implementation examples.
 
 Build the static demo for GitHub Pages:
 
 ```bash
-npm run build:demo
+npm run build
 ```
 
-The output is written to `dist-demo`.
+The site output is written to `dist-demo`. The root contains the live demo and `dist-demo/api/` contains generated TypeDoc API documentation.
+
+## API Documentation
+
+API documentation is generated from the public exports in `src/index.ts`:
+
+```bash
+npm run docs
+```
+
+Generated documentation is written to `dist-demo/api/` and is not committed.
 
 ## Build Output
 
@@ -271,6 +296,8 @@ npm run dev
 npm run build
 npm run build:lib
 npm run build:demo
+npm run build:docs
+npm run docs
 npm run typecheck
 npm run lint
 npm test
@@ -297,13 +324,14 @@ npm ci
 typecheck
 lint
 unit tests
-build library
-build demo
+build library, demo, and API docs
 install Playwright browsers
 Playwright tests
+upload Pages artifact on main
+deploy Pages on main
 ```
 
-No generated coverage reports are committed.
+No generated coverage reports or generated docs are committed.
 
 ## Trade-Offs
 
@@ -316,12 +344,4 @@ This v1 intentionally does not include:
 - Async validation.
 - Framework-specific adapters.
 
-Those features are possible future additions, but each would need to preserve the small API and predictable runtime model.
-
-## Roadmap
-
-- Internationalized validation messages.
-- Optional async validation with a contained API.
-- Additional built-in field types.
-- Schema versioning guidance.
-- Thin framework adapters that wrap the core instead of changing it.
+These boundaries keep the runtime small, deterministic, and easy to embed in non-framework applications.

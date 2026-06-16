@@ -125,6 +125,7 @@ const header = el("header", "demo-header");
 const titleGroup = el("div", "demo-title-group");
 const title = el("h1", "demo-title", "Form Schema Runtime");
 const subtitle = el("p", "demo-subtitle", "Framework-agnostic form rendering for enterprise UI surfaces");
+const pageLinks = el("nav", "demo-links");
 const toolbar = el("div", "demo-toolbar");
 const schemaControl = el("div", "demo-control");
 const schemaLabel = el("label", undefined, "Example schema");
@@ -145,6 +146,12 @@ const schemaCode = el("pre");
 const stateCode = el("pre");
 const errorCode = el("pre");
 
+function demoLink(label: string, href: string): HTMLAnchorElement {
+  const link = el("a", "demo-link", label);
+  link.href = href;
+  return link;
+}
+
 schemaLabel.setAttribute("for", "demo-schema-select");
 schemaSelect.id = "demo-schema-select";
 examples.forEach((example) => {
@@ -157,9 +164,22 @@ examples.forEach((example) => {
 darkToggle.type = "checkbox";
 darkToggle.id = "demo-dark-mode";
 darkToggleLabel.append(darkToggle, document.createTextNode("Dark mode"));
+pageLinks.setAttribute("aria-label", "Project links");
+pageLinks.append(
+  demoLink("GitHub", "https://github.com/DanieleMasone/form-schema-runtime"),
+  demoLink("API docs", "api/"),
+  demoLink(
+    "Custom validators",
+    "https://github.com/DanieleMasone/form-schema-runtime/blob/main/docs/examples/custom-validators.md"
+  ),
+  demoLink(
+    "Custom renderers",
+    "https://github.com/DanieleMasone/form-schema-runtime/blob/main/docs/examples/custom-renderers.md"
+  )
+);
 schemaControl.append(schemaLabel, schemaSelect);
 toolbar.append(schemaControl, darkToggleLabel);
-titleGroup.append(title, subtitle);
+titleGroup.append(title, subtitle, pageLinks);
 header.append(titleGroup, toolbar);
 formPanelHeader.append(formPanelTitle, statusText);
 formPanel.append(formPanelHeader, formHost);

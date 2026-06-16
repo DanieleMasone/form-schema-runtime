@@ -1,5 +1,6 @@
 import type { FieldRenderer } from "./renderField";
 
+/** Custom renderer map keyed by schema field type. */
 export type RendererMap = Record<string, FieldRenderer>;
 
 export interface RendererRegistry {

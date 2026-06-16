@@ -7,12 +7,12 @@ export default defineConfig({
     timeout: 5_000
   },
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: "http://127.0.0.1:4173/form-schema-runtime/",
     trace: "on-first-retry"
   },
   webServer: {
-    command: "npm run dev -- --host 127.0.0.1 --port 5173",
-    url: "http://127.0.0.1:5173",
+    command: "npm run preview -- --host 127.0.0.1 --port 4173",
+    url: "http://127.0.0.1:4173/form-schema-runtime/",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000
   },

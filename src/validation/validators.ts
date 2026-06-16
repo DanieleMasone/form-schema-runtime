@@ -49,7 +49,7 @@ export function validateStringLength(field: NormalizedField, value: FieldValue):
 }
 
 export function validateNumberRange(field: NormalizedField, value: FieldValue): string | null {
-  if (isEmpty(value) || field.type !== "number") {
+  if (isEmpty(value) || (field.min === undefined && field.max === undefined)) {
     return null;
   }
 

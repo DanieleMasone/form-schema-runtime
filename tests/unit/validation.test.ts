@@ -25,7 +25,9 @@ describe("validation", () => {
         type: "text",
         name: "taxCode",
         label: "Tax code",
-        validators: ["taxCode"]
+        validators: ["taxCode"],
+        minLength: 4,
+        pattern: "^[A-Z0-9]+$"
       }
     ]
   };
@@ -53,7 +55,7 @@ describe("validation", () => {
       {
         email: "user@example.com",
         quantity: 3,
-        taxCode: "ABC"
+        taxCode: "ABCD"
       },
       {
         taxCode(value, context) {
@@ -73,5 +75,24 @@ describe("validation", () => {
 
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual({});
+  });
+
+  it("returns multiple errors for one field when multiple rules fail", () => {
+    const normalized = normalizeSchema(schema);
+    const result = validateForm(
+      normalized,
+      { email: "user@example.com", quantity: 3, taxCode: "a" },
+      {
+        taxCode() {
+          return "Custom validator failed.";
+        }
+      }
+    );
+
+    expect(result.errors.taxCode).toEqual([
+      "Tax code must be at least 4 characters.",
+      "Tax code has an invalid format.",
+      "Custom validator failed."
+    ]);
   });
 });

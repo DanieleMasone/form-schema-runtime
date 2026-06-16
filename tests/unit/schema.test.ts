@@ -48,4 +48,28 @@ describe("normalizeSchema", () => {
 
     expect(() => normalizeSchema(schema)).toThrow('Duplicate field name "email"');
   });
+
+  it("rejects select and radio fields without usable options", () => {
+    const withoutOptions: FormSchema = {
+      id: "missing-options",
+      fields: [{ type: "select", name: "department", label: "Department" }]
+    };
+    const duplicateOptions: FormSchema = {
+      id: "duplicate-options",
+      fields: [
+        {
+          type: "radio",
+          name: "access",
+          label: "Access",
+          options: [
+            { label: "Read", value: "read" },
+            { label: "Read again", value: "read" }
+          ]
+        }
+      ]
+    };
+
+    expect(() => normalizeSchema(withoutOptions)).toThrow("requires at least one option");
+    expect(() => normalizeSchema(duplicateOptions)).toThrow('duplicate option value "read"');
+  });
 });

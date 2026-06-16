@@ -1,0 +1,14 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["src/index.ts"],
+  "out": "dist-demo/api",
+  "readme": "none",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "navigationLinks": {
+    "Live demo": "https://danielemasone.github.io/form-schema-runtime/",
+    "GitHub": "https://github.com/DanieleMasone/form-schema-runtime"
+  }
+}

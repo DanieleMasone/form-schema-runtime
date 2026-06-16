@@ -1,9 +1,12 @@
+/** Tracks DOM event listeners so custom renderers can participate in cleanup. */
 export interface EventRegistry {
+  /** Register an event listener that will be removed when the form re-renders or is destroyed. */
   listen<K extends keyof HTMLElementEventMap>(
     element: HTMLElement | Document,
     type: K,
     listener: (event: HTMLElementEventMap[K]) => void
   ): void;
+  /** Remove all listeners registered through this registry. */
   cleanup(): void;
 }
 

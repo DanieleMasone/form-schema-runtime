@@ -38,4 +38,13 @@ describe("formState", () => {
       isValid: true
     });
   });
+
+  it("setValues updates known fields and ignores unknown fields", () => {
+    const state = createFormState(normalizeSchema(schema), { name: "Ada" });
+
+    state.setValues({ name: "Grace", missing: "ignored", accepted: true });
+
+    expect(state.getValues()).toEqual({ name: "Grace", accepted: true });
+    expect(state.getSnapshot().dirtyFields).toEqual(["name", "accepted"]);
+  });
 });

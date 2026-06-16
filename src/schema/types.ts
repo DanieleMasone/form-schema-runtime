@@ -1,6 +1,10 @@
+/** Primitive value stored for a rendered form field. */
 export type FieldValue = string | number | boolean | null | undefined;
+
+/** Current form values keyed by schema field name. */
 export type FormValues = Record<string, FieldValue>;
 
+/** Field types supported by the default renderer set. */
 export type BuiltInFieldType =
   | "text"
   | "email"
@@ -13,19 +17,27 @@ export type BuiltInFieldType =
 
 export type FieldType = BuiltInFieldType | (string & {});
 
+/** Option used by `select` and `radio` fields. */
 export interface FieldOption {
   label: string;
   value: string | number | boolean;
 }
 
+/** A single declarative visibility condition. */
 export interface VisibilityCondition {
+  /** Field name whose current value should be inspected. */
   field: string;
+  /** The dependent field is visible when the referenced value strictly equals this value. */
   equals?: FieldValue;
+  /** The dependent field is visible when the referenced value does not strictly equal this value. */
   notEquals?: FieldValue;
+  /** The dependent field is visible when the referenced string or array includes this value. */
   includes?: FieldValue;
+  /** The dependent field is visible when the referenced value exists, or does not exist when false. */
   exists?: boolean;
 }
 
+/** One visibility condition or a simple AND array of conditions. */
 export type VisibilityRule = VisibilityCondition | VisibilityCondition[];
 
 export type ValidationMessageKey =
@@ -45,6 +57,7 @@ export interface BaseSchemaNode {
   visibleWhen?: VisibilityRule;
 }
 
+/** Section/group node used to organize fields without creating a value. */
 export interface SectionSchema extends BaseSchemaNode {
   type: "section";
   title: string;
@@ -52,6 +65,12 @@ export interface SectionSchema extends BaseSchemaNode {
   fields: SchemaNode[];
 }
 
+/**
+ * Declarative field definition consumed by the runtime.
+ *
+ * Unknown `type` values are allowed only when a matching custom renderer is
+ * registered through `CreateFormOptions.renderers`.
+ */
 export interface FieldSchema extends BaseSchemaNode {
   type: FieldType;
   name: string;
@@ -74,6 +93,7 @@ export interface FieldSchema extends BaseSchemaNode {
 
 export type SchemaNode = SectionSchema | FieldSchema;
 
+/** Declarative schema passed to `createForm`. */
 export interface FormSchema {
   id: string;
   title?: string;
@@ -102,12 +122,18 @@ export interface NormalizedFormSchema extends Omit<FormSchema, "fields"> {
   fieldOrder: string[];
 }
 
+/** Context passed to synchronous custom validators. */
 export interface CustomValidatorContext {
   fieldName: string;
   values: FormValues;
-  schema: NormalizedFormSchema;
+  schema: FormSchema;
 }
 
+/**
+ * Synchronous validator registered by name and referenced from field schemas.
+ *
+ * Return a human-readable error message when invalid, or `null` when valid.
+ */
 export type CustomValidator = (
   value: FieldValue,
   context: CustomValidatorContext
@@ -122,6 +148,7 @@ export interface FieldError {
 
 export type FieldErrors = Record<string, string[]>;
 
+/** Immutable snapshot passed to form event hooks. */
 export interface FormStateSnapshot {
   values: FormValues;
   touchedFields: string[];

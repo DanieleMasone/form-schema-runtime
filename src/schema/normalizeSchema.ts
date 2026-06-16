@@ -38,6 +38,28 @@ function defaultValueForField(field: FieldSchema) {
   return "";
 }
 
+function validateOptionField(field: FieldSchema, schemaId: string): void {
+  if (field.type !== "select" && field.type !== "radio") {
+    return;
+  }
+
+  if (!field.options || field.options.length === 0) {
+    throw new Error(`Field "${field.name}" in schema "${schemaId}" requires at least one option.`);
+  }
+
+  const optionValues = new Set<string>();
+
+  field.options.forEach((option) => {
+    const optionValue = String(option.value);
+
+    if (optionValues.has(optionValue)) {
+      throw new Error(`Field "${field.name}" in schema "${schemaId}" has duplicate option value "${optionValue}".`);
+    }
+
+    optionValues.add(optionValue);
+  });
+}
+
 export function normalizeSchema(schema: FormSchema): NormalizedFormSchema {
   const fieldMap = new Map<string, NormalizedField>();
   const fieldOrder: string[] = [];
@@ -61,6 +83,8 @@ export function normalizeSchema(schema: FormSchema): NormalizedFormSchema {
     if (fieldMap.has(node.name)) {
       throw new Error(`Duplicate field name "${node.name}" in schema "${schema.id}".`);
     }
+
+    validateOptionField(node, schema.id);
 
     const fieldId = node.id ? normalizeId(node.id) : normalizeId(node.name);
     const normalizedField: NormalizedField = {

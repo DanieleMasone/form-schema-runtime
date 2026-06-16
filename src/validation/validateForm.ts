@@ -6,6 +6,7 @@ import type {
 } from "../schema/types";
 import { validateField } from "./validateField";
 
+/** Internal validation result used by the runtime before rendering errors. */
 export interface FormValidationResult {
   valid: boolean;
   errors: FieldErrors;

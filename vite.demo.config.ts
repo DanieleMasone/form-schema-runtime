@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   root: ".",
-  base: "./",
+  base: process.env.NODE_ENV === "production" ? "/form-schema-runtime/" : "/",
   build: {
     outDir: "dist-demo",
     emptyOutDir: true,
