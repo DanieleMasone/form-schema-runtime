@@ -6,6 +6,8 @@ test("demo loads and switches schemas", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Form Schema Runtime" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Customer onboarding" })).toBeVisible();
   await expect(page.getByRole("link", { name: "API docs" })).toHaveAttribute("href", /api\/$/);
+  await expect(page.getByRole("link", { name: "Coverage" })).toHaveAttribute("href", /coverage\/$/);
+  await expect(page.getByRole("heading", { name: "Active schema" })).toBeVisible();
 
   await page.getByLabel("Example schema").selectOption("enterprise-access-request");
 
@@ -68,6 +70,9 @@ test("basic keyboard navigation reaches native controls", async ({ page }) => {
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "API docs" })).toBeFocused();
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("link", { name: "Coverage" })).toBeFocused();
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Custom validators" })).toBeFocused();

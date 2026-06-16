@@ -1,7 +1,7 @@
 # Form Schema Runtime
 
 [![CI](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?logo=typescript)
 ![Vite](https://img.shields.io/badge/Vite-Library_Mode-646CFF?logo=vite)
 ![Accessibility](https://img.shields.io/badge/Accessibility-First-success)
 ![Framework](https://img.shields.io/badge/Framework-Agnostic-0F172A)
@@ -13,6 +13,8 @@ The project is designed for enterprise and legacy-friendly frontend applications
 Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
 
 Generated API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
+
+Coverage report: [danielemasone.github.io/form-schema-runtime/coverage/](https://danielemasone.github.io/form-schema-runtime/coverage/)
 
 ## Why Framework-Agnostic
 
@@ -255,10 +257,11 @@ The demo includes:
 - Customer onboarding form.
 - Enterprise access request form.
 - Payment details mock form.
-- Live schema, state, and errors.
+- Live schema, current values, state, errors, and submit result.
+- Feature notes explaining validation, conditional fields, and custom renderers.
 - Dark mode through CSS variables.
 - Custom `money` renderer.
-- Links to GitHub, generated API docs, and implementation examples.
+- Links to GitHub, generated API docs, coverage, and implementation examples.
 
 Build the static demo for GitHub Pages:
 
@@ -266,7 +269,7 @@ Build the static demo for GitHub Pages:
 npm run build
 ```
 
-The site output is written to `dist-demo`. The root contains the live demo and `dist-demo/api/` contains generated TypeDoc API documentation.
+The site output is written to `dist-demo`. The root contains the live demo, `dist-demo/api/` contains generated TypeDoc API documentation, and `dist-demo/coverage/` contains the generated Vitest coverage report when `npm run test:coverage` has been run before build.
 
 ## API Documentation
 
@@ -277,6 +280,16 @@ npm run docs
 ```
 
 Generated documentation is written to `dist-demo/api/` and is not committed.
+
+## Coverage Report
+
+Unit test coverage is generated with Vitest and the V8 coverage provider:
+
+```bash
+npm run test:coverage
+```
+
+The HTML report is written to `coverage/`. During `npm run build`, the report is copied into `dist-demo/coverage/` for GitHub Pages. Generated coverage output is not committed.
 
 ## Build Output
 
@@ -297,10 +310,12 @@ npm run build
 npm run build:lib
 npm run build:demo
 npm run build:docs
+npm run build:coverage
 npm run docs
 npm run typecheck
 npm run lint
 npm test
+npm run test:coverage
 npm run test:watch
 npm run test:e2e
 npm run test:e2e:ui
@@ -313,6 +328,8 @@ Unit tests use Vitest and jsdom. Coverage includes schema normalization, validat
 
 Playwright E2E tests cover demo loading, schema switching, required validation, error summary focus, conditional fields, reset, dark mode, and basic keyboard navigation.
 
+Coverage is generated from the unit suite with V8 coverage and published under `/coverage/` as part of the GitHub Pages artifact.
+
 ## CI/CD
 
 GitHub Actions runs a simple verification pipeline:
@@ -324,7 +341,8 @@ npm ci
 typecheck
 lint
 unit tests
-build library, demo, and API docs
+coverage report
+build library, demo, API docs, and coverage page
 install Playwright browsers
 Playwright tests
 upload Pages artifact on main

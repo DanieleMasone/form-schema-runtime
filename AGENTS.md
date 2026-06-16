@@ -46,11 +46,13 @@
 
 ## CI and Build Expectations
 
-- Keep CI to meaningful steps: install, typecheck, lint, unit tests, build, Playwright, and Pages deployment.
+- Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, build, Playwright, and Pages deployment.
 - Do not add matrix builds unless there is a demonstrated compatibility reason.
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
-- Keep `npm run build` producing the library, demo, and API docs.
+- Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
+- Pages artifact structure should remain root demo, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
+- Avoid dependency bloat; do not keep direct dependencies that are only transitive toolchain details.
 
 ## Documentation Expectations
 
@@ -58,7 +60,8 @@
 - Document extension points that exist today.
 - Avoid speculative Roadmap sections unless explicitly requested.
 - Keep generated API docs focused on public exports from `src/index.ts`.
-- Keep GitHub Pages useful and deployable: root demo plus `/api/` docs.
+- Keep GitHub Pages useful and deployable: root demo plus `/api/` docs and `/coverage/` report.
+- Keep demo UI helpers, schema metadata, and repeated rendering helpers centralized when it improves readability.
 
 ## What Not To Do
 

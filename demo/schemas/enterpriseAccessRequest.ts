@@ -38,6 +38,14 @@ export const enterpriseAccessRequestSchema: FormSchema = {
             { label: "Security", value: "security" },
             { label: "Operations", value: "operations" }
           ]
+        },
+        {
+          type: "text",
+          name: "sourceSystem",
+          label: "Source system",
+          readonly: true,
+          defaultValue: "Identity Governance",
+          helpText: "Readonly fields are rendered with native readonly attributes."
         }
       ]
     },
@@ -69,6 +77,14 @@ export const enterpriseAccessRequestSchema: FormSchema = {
           }
         },
         {
+          type: "text",
+          name: "accessWindow",
+          label: "Access window",
+          disabled: true,
+          defaultValue: "Business hours only",
+          helpText: "Disabled fields remain visible but are not editable."
+        },
+        {
           type: "checkbox",
           name: "approvalConfirmed",
           label: "Manager approval is attached",
@@ -82,5 +98,7 @@ export const enterpriseAccessRequestSchema: FormSchema = {
 
 export const enterpriseAccessRequestInitialValues: FormValues = {
   department: "operations",
-  accessLevel: "read"
+  accessLevel: "read",
+  sourceSystem: "Identity Governance",
+  accessWindow: "Business hours only"
 };

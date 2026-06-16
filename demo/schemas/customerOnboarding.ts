@@ -17,16 +17,20 @@ export const customerOnboardingSchema: FormSchema = {
           type: "text",
           name: "firstName",
           label: "First name",
+          placeholder: "Ada",
           required: true,
           minLength: 2,
+          maxLength: 40,
           helpText: "Use the legal first name from the customer's identity document."
         },
         {
           type: "text",
           name: "lastName",
           label: "Last name",
+          placeholder: "Lovelace",
           required: true,
-          minLength: 2
+          minLength: 2,
+          maxLength: 40
         },
         {
           type: "email",
@@ -39,8 +43,18 @@ export const customerOnboardingSchema: FormSchema = {
           type: "text",
           name: "taxCode",
           label: "Tax code",
+          placeholder: "RSSMRA80A01H501U",
           validators: ["taxCode"],
           helpText: "Optional Italian tax code validation is supplied as a custom validator."
+        },
+        {
+          type: "number",
+          name: "estimatedAnnualSpend",
+          label: "Estimated annual spend",
+          required: true,
+          min: 100,
+          max: 1000000,
+          helpText: "Used by operations to select the onboarding review path."
         }
       ]
     },
@@ -83,5 +97,6 @@ export const customerOnboardingSchema: FormSchema = {
 };
 
 export const customerOnboardingInitialValues: FormValues = {
-  accountType: "consumer"
+  accountType: "consumer",
+  estimatedAnnualSpend: 2500
 };

@@ -30,6 +30,7 @@ export const paymentDetailsSchema: FormSchema = {
           label: "Amount",
           required: true,
           min: 1,
+          max: 250000,
           helpText: "Custom money renderer registered by the demo application."
         }
       ]
@@ -55,6 +56,7 @@ export const paymentDetailsSchema: FormSchema = {
           label: "Card last 4 digits",
           required: true,
           pattern: "^[0-9]{4}$",
+          helpText: "Mock card metadata only. Do not enter real payment details.",
           visibleWhen: {
             field: "paymentMethod",
             equals: "card"
@@ -66,6 +68,8 @@ export const paymentDetailsSchema: FormSchema = {
           label: "Purchase order",
           required: true,
           minLength: 6,
+          maxLength: 24,
+          placeholder: "PO-2026-001",
           visibleWhen: {
             field: "paymentMethod",
             equals: "invoice"

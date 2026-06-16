@@ -28,6 +28,12 @@ describe("validation", () => {
         validators: ["taxCode"],
         minLength: 4,
         pattern: "^[A-Z0-9]+$"
+      },
+      {
+        type: "text",
+        name: "shortCode",
+        label: "Short code",
+        maxLength: 3
       }
     ]
   };
@@ -36,15 +42,23 @@ describe("validation", () => {
     const normalized = normalizeSchema(schema);
     const emailField = normalized.fieldMap.get("email");
     const quantityField = normalized.fieldMap.get("quantity");
+    const shortCodeField = normalized.fieldMap.get("shortCode");
 
     expect(emailField).toBeDefined();
     expect(quantityField).toBeDefined();
+    expect(shortCodeField).toBeDefined();
     expect(validateField(emailField!, "", {}, normalized)).toEqual(["Email is required."]);
     expect(validateField(emailField!, "not-an-email", {}, normalized)).toEqual([
       "Email must be a valid email address."
     ]);
+    expect(validateField(quantityField!, 0, { quantity: 0 }, normalized)).toEqual([
+      "Quantity must be at least 1."
+    ]);
     expect(validateField(quantityField!, 6, { quantity: 6 }, normalized)).toEqual([
       "Quantity must be no more than 5."
+    ]);
+    expect(validateField(shortCodeField!, "ABCD", { shortCode: "ABCD" }, normalized)).toEqual([
+      "Short code must be no more than 3 characters."
     ]);
   });
 

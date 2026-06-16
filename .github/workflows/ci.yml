@@ -40,7 +40,10 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Build library, demo, and API docs
+      - name: Coverage report
+        run: npm run test:coverage
+
+      - name: Build library, demo, API docs, and coverage page
         run: npm run build
 
       - name: Install Playwright browsers

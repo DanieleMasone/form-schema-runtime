@@ -7,7 +7,6 @@ dist-*/
 
 # Coverage and generated documentation
 coverage/
-docs/
 .nyc_output/
 
 # Playwright reports and browser test artifacts
