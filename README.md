@@ -8,19 +8,11 @@
 
 Framework-agnostic TypeScript runtime for rendering accessible, customizable HTML forms from declarative JSON schemas.
 
-The project is designed for enterprise and legacy-friendly frontend applications where React, Angular, or Vue cannot always be introduced, but maintainability, accessibility, validation, customization, and integration quality still matter.
+It targets enterprise and legacy-friendly frontend surfaces where React, Angular, Vue, or Svelte cannot always be introduced, but teams still need typed schemas, validation, state hooks, accessible native controls, and safe DOM rendering.
 
-Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
-
-Generated API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
-
-Coverage report: [danielemasone.github.io/form-schema-runtime/coverage/](https://danielemasone.github.io/form-schema-runtime/coverage/)
-
-## Why Framework-Agnostic
-
-Large organizations often run a mix of server-rendered pages, legacy scripts, micro-frontends, and modern framework applications. A form runtime with no framework dependency can be embedded into those environments while preserving a consistent schema model, validation behavior, and accessibility baseline.
-
-The core package renders native HTML controls into a provided container element. It does not ship a visual form builder, virtual DOM, generic rules engine, or framework clone.
+- Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
+- API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
+- Coverage report: [danielemasone.github.io/form-schema-runtime/coverage/](https://danielemasone.github.io/form-schema-runtime/coverage/)
 
 ## Installation
 
@@ -28,10 +20,8 @@ The core package renders native HTML controls into a provided container element.
 npm install form-schema-runtime
 ```
 
-Import the runtime and CSS:
-
 ```ts
-import { createForm } from "form-schema-runtime";
+import { createForm, type FormSchema } from "form-schema-runtime";
 import "form-schema-runtime/styles.css";
 ```
 
@@ -42,15 +32,14 @@ import { createForm, type FormSchema } from "form-schema-runtime";
 import "form-schema-runtime/styles.css";
 
 const schema: FormSchema = {
-  id: "customer-onboarding",
-  title: "Customer onboarding",
+  id: "contact-form",
+  title: "Contact form",
   fields: [
     {
       type: "text",
-      name: "firstName",
-      label: "First name",
-      required: true,
-      minLength: 2
+      name: "fullName",
+      label: "Full name",
+      required: true
     },
     {
       type: "email",
@@ -70,6 +59,8 @@ const form = createForm({
 });
 ```
 
+Use the returned instance for `getValues`, `setValues`, `validate`, `reset`, and `destroy`. See the usage guide for the full lifecycle.
+
 ## Documentation
 
 - [Usage Guide](docs/usage-guide.md)
@@ -78,162 +69,15 @@ const form = createForm({
 - [Customization Guide](docs/customization-guide.md)
 - [Accessibility Guide](docs/accessibility-guide.md)
 - [Integration Guide](docs/integration-guide.md)
+- [Release Process](docs/release-process.md)
 - [Generated API Docs](https://danielemasone.github.io/form-schema-runtime/api/)
 - [Feature Matrix](docs/feature-matrix.md)
 - [Market Positioning](docs/market-positioning.md)
 - [Coverage Report](https://danielemasone.github.io/form-schema-runtime/coverage/)
 
-## Public API
-
-```ts
-const form = createForm({
-  container,
-  schema,
-  initialValues,
-  classPrefix: "fsr",
-  validators: {
-    taxCode: customTaxCodeValidator
-  },
-  renderers: {
-    money: customMoneyRenderer
-  },
-  onChange(values, state) {},
-  onSubmit(values, state) {},
-  onValidationError(errors, state) {},
-  onReset(state) {}
-});
-
-form.getValues();
-form.setValues({ firstName: "Ada" });
-form.validate();
-form.reset();
-form.destroy();
-```
-
-Only the stable API is exported from `src/index.ts`. Internal modules remain separated for testability, but consumers should treat them as implementation details.
-
-## Schema Model
-
-Supported built-in field types:
-
-- `text`
-- `email`
-- `number`
-- `password`
-- `textarea`
-- `select`
-- `checkbox`
-- `radio`
-
-Schemas support sections, labels, placeholders, help text, disabled and readonly controls, required fields, options, initial values, validation rules, and simple conditional visibility.
-
-```ts
-const schema: FormSchema = {
-  id: "enterprise-access-request",
-  title: "Enterprise access request",
-  fields: [
-    {
-      type: "select",
-      name: "accountType",
-      label: "Account type",
-      required: true,
-      options: [
-        { value: "standard", label: "Standard" },
-        { value: "enterprise", label: "Enterprise" }
-      ]
-    },
-    {
-      type: "text",
-      name: "companyName",
-      label: "Company name",
-      required: true,
-      visibleWhen: {
-        field: "accountType",
-        equals: "enterprise"
-      }
-    }
-  ]
-};
-```
-
-## Validation
-
-Built-in validation is deterministic and independent from rendering:
-
-- `required`
-- `minLength`
-- `maxLength`
-- `min`
-- `max`
-- `pattern`
-- email validation for `email` fields
-- synchronous custom validators by name
-
-```ts
-const taxCodeValidator: CustomValidator = (value) => {
-  if (!value) {
-    return null;
-  }
-
-  return String(value).length === 16 ? null : "Tax code must contain 16 characters.";
-};
-```
-
-More examples are in [docs/examples/custom-validators.md](docs/examples/custom-validators.md).
-
-## Custom Renderers
-
-Custom field types can be registered without introducing a plugin lifecycle:
-
-```ts
-const moneyRenderer: FieldRenderer = (context) => {
-  const input = document.createElement("input");
-  input.id = context.inputId;
-  input.name = context.field.name;
-  input.type = "number";
-  input.value = context.value == null ? "" : String(context.value);
-  input.setAttribute("aria-invalid", context.errors.length > 0 ? "true" : "false");
-
-  context.events.listen(input, "input", () => {
-    context.setValue(input.value === "" ? null : Number(input.value));
-  });
-
-  return input;
-};
-```
-
-More examples are in [docs/examples/custom-renderers.md](docs/examples/custom-renderers.md).
-
-## Extension Points
-
-The v1 extension surface is intentionally small:
-
-- Register synchronous validators by name through `validators`.
-- Register custom field renderers by field type through `renderers`.
-- Customize styling with CSS variables and a stable class prefix.
-
-Schemas do not contain executable JavaScript. Async validation, framework adapters, schema versioning machinery, and a generic rules engine are outside the current runtime.
-
-## Accessibility
-
-The runtime uses native form controls and implements practical accessibility behavior:
-
-- Label/input association.
-- Stable generated IDs.
-- `aria-invalid` for invalid fields.
-- `aria-describedby` for help and error text.
-- Form-level error summary.
-- Error summary links focus invalid controls.
-- Required fields are represented in text and native control attributes.
-- Placeholders are never used as label replacements.
-
-## Security
-
-Schemas are treated as untrusted data. Schema-provided labels, help text, placeholders, option labels, validation messages, and error summary text are rendered with DOM APIs and `textContent`, not `innerHTML`.
-
-The runtime does not execute schema-provided code, does not evaluate JavaScript strings, does not use `eval`, and does not use the `Function` constructor. Schema attributes are explicitly handled rather than blindly copied to DOM nodes.
-
 ## Architecture
+
+The public API lives in `src/index.ts`. Schema normalization, validation, state, condition evaluation, DOM helpers, and renderers stay separated so each concern remains testable.
 
 ```txt
 src/
@@ -247,129 +91,27 @@ src/
   styles/
 ```
 
-Responsibilities are intentionally small:
+The library renders native controls into a caller-provided container. Schema text is treated as untrusted data and rendered with DOM APIs rather than `innerHTML`.
 
-- Schema normalization validates duplicate field names and derives field maps.
-- Validation runs independently from DOM rendering.
-- State tracks values, touched fields, dirty fields, and errors.
-- Conditions support simple declarative visibility only.
-- Renderers create explicit DOM nodes and clean up event listeners on destroy.
-
-The core design decision is documented in [docs/adr/0001-framework-agnostic-typescript-core.md](docs/adr/0001-framework-agnostic-typescript-core.md).
-
-The market positioning and v1 scope boundaries are documented in [docs/market-positioning.md](docs/market-positioning.md).
-
-## Demo
-
-Run the Vite demo:
+## Build And Test
 
 ```bash
-npm run dev
-```
-
-The demo includes:
-
-- Customer onboarding form.
-- Enterprise access request form.
-- Payment details mock form.
-- Live schema, current values, state, errors, and submit result.
-- Feature notes explaining validation, conditional fields, and custom renderers.
-- Dark mode through CSS variables.
-- Custom `money` renderer.
-- Links to usage documentation, GitHub, generated API docs, coverage, and implementation examples.
-
-Build the static demo for GitHub Pages:
-
-```bash
-npm run build
-```
-
-The site output is written to `dist-demo`. The root contains the live demo, `dist-demo/docs/` contains Markdown usage documentation, `dist-demo/api/` contains generated TypeDoc API documentation, and `dist-demo/coverage/` contains the generated Vitest coverage report when `npm run test:coverage` has been run before build.
-
-## API Documentation
-
-API documentation is generated from the public exports in `src/index.ts`:
-
-```bash
-npm run docs
-```
-
-Generated documentation is written to `dist-demo/api/` and is not committed.
-
-## Coverage Report
-
-Unit test coverage is generated with Vitest and the V8 coverage provider:
-
-```bash
-npm run test:coverage
-```
-
-The HTML report is written to `coverage/`. During `npm run build`, the report is copied into `dist-demo/coverage/` for GitHub Pages. Generated coverage output is not committed.
-
-## Build Output
-
-The package builds:
-
-- ESM: `dist/form-schema-runtime.js`
-- IIFE: `dist/form-schema-runtime.iife.js`
-- CSS: `dist/form-schema-runtime.css`
-- Declarations: `dist/types`
-
-The IIFE build exposes `FormSchemaRuntime`.
-
-## Scripts
-
-```bash
-npm run dev
-npm run build
-npm run build:lib
-npm run build:demo
-npm run build:docs
-npm run build:site-docs
-npm run build:coverage
-npm run docs
+npm ci
 npm run typecheck
 npm run lint
 npm test
 npm run test:coverage
-npm run test:watch
+npm run build
 npm run test:e2e
-npm run test:e2e:ui
-npm run preview
 ```
 
-## Testing Strategy
+`npm run build` produces the library package, the GitHub Pages demo, TypeDoc API docs, copied Markdown docs, and the coverage page when coverage has been generated.
 
-Unit tests use Vitest and jsdom. Coverage includes schema normalization, validators, custom validators, state tracking, reset behavior, conditional logic, renderer registry behavior, DOM rendering, and accessibility attributes where practical.
+## Release
 
-Playwright E2E tests cover the built static demo under the GitHub Pages base path, schema switching, required validation, error summary focus, conditional fields, custom renderer behavior, reset, dark mode, inspector panels, project links, basic keyboard navigation, and desktop/mobile viewport smoke checks.
+Releases are GitHub Release driven. Publishing to npm is handled by a dedicated release workflow using npm Trusted Publishing/OIDC, with no long-lived npm publish token in GitHub secrets.
 
-Coverage is generated from the unit suite with V8 coverage and published under `/coverage/` as part of the GitHub Pages artifact.
-
-The public feature checklist is maintained in [docs/feature-matrix.md](docs/feature-matrix.md).
-
-## CI/CD
-
-GitHub Actions runs a simple verification pipeline:
-
-```txt
-checkout
-setup Node
-npm ci
-typecheck
-lint
-unit tests
-coverage report
-build library, demo, API docs, Markdown docs, and coverage page
-install Playwright browsers
-Playwright tests
-upload Pages artifact on main
-deploy Pages on main
-```
-
-CI uses Node 24 LTS with the npm version declared in `packageManager`. The TypeScript and TypeDoc versions are kept on a declared compatible pairing before generated API docs are trusted.
-
-No generated coverage reports or generated docs are committed.
+See [docs/release-process.md](docs/release-process.md) for setup, tag conventions, verification, publishing, provenance, and failure handling.
 
 ## Trade-Offs
 
@@ -381,5 +123,6 @@ This v1 intentionally does not include:
 - Repeatable or nested array forms.
 - Async validation.
 - Framework-specific adapters.
+- Backend submission or storage.
 
-These boundaries keep the runtime small, deterministic, and easy to embed in non-framework applications.
+Those boundaries keep the runtime small, deterministic, and easy to embed in non-framework applications.

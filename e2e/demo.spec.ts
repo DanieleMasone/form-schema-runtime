@@ -37,8 +37,10 @@ test("documentation links are visible and published in the Pages artifact", asyn
     ["Customization Guide", /docs\/customization-guide\.md$/],
     ["Accessibility Guide", /docs\/accessibility-guide\.md$/],
     ["Integration Guide", /docs\/integration-guide\.md$/],
+    ["Release Process", /docs\/release-process\.md$/],
     ["API Documentation", /api\/$/],
-    ["Coverage Report", /coverage\/$/]
+    ["Coverage Report", /coverage\/$/],
+    ["GitHub Repository", /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime$/]
   ] as const;
 
   for (const [name, href] of docs) {
@@ -63,6 +65,9 @@ test("documentation links are visible and published in the Pages artifact", asyn
 
   await page.goto("docs/integration-guide.md");
   await expect(page.getByText("# Integration Guide")).toBeVisible();
+
+  await page.goto("docs/release-process.md");
+  await expect(page.getByText("# Release Process")).toBeVisible();
 });
 
 test("payment form validates custom money and invoice fields", async ({ page }) => {
@@ -147,7 +152,7 @@ test("basic keyboard navigation reaches native controls", async ({ page }) => {
   await page.goto("/");
 
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "GitHub" })).toBeFocused();
+  await expect(page.getByRole("link", { name: "GitHub", exact: true })).toBeFocused();
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "API docs" })).toBeFocused();

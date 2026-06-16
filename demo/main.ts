@@ -53,8 +53,10 @@ function createDocumentationPanel(): HTMLElement {
     ["Customization Guide", "docs/customization-guide.md"],
     ["Accessibility Guide", "docs/accessibility-guide.md"],
     ["Integration Guide", "docs/integration-guide.md"],
+    ["Release Process", "docs/release-process.md"],
     ["API Documentation", "api/"],
-    ["Coverage Report", "coverage/"]
+    ["Coverage Report", "coverage/"],
+    ["GitHub Repository", "https://github.com/DanieleMasone/form-schema-runtime"]
   ].forEach(([label, href]) => {
     links.append(externalLink(label, href));
   });

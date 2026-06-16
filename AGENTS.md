@@ -56,7 +56,10 @@
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
-- Pages artifact structure should remain root demo, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
+- Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
+- Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
+- Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
+- Do not add generated npm package tarballs, generated build output, generated coverage, generated TypeDoc output, or Playwright reports to commits.
 - Avoid dependency bloat; do not keep direct dependencies, scripts, or generated artifacts that are only transitive toolchain details.
 
 ## Documentation Expectations
@@ -71,6 +74,7 @@
 - Do not turn README into a full manual; link to focused docs under `docs/`.
 - Keep demo documentation links working in the GitHub Pages artifact.
 - Keep examples executable or close to executable.
+- Keep release documentation aligned with `.github/workflows/release.yml`, `.github/release.yml`, npm Trusted Publisher configuration, and package metadata.
 - Keep `docs/market-positioning.md` aligned with the library's framework-agnostic position and explicit non-goals.
 - Avoid speculative Roadmap sections unless explicitly requested.
 - Keep generated API docs focused on public exports from `src/index.ts`.
