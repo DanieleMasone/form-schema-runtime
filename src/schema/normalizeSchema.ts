@@ -60,6 +60,12 @@ function validateOptionField(field: FieldSchema, schemaId: string): void {
   });
 }
 
+/**
+ * Prepares a public schema for rendering and validation.
+ *
+ * Normalization keeps consumer-facing schema data unchanged while deriving
+ * stable IDs, traversal paths, field lookup maps, and duplicate/option checks.
+ */
 export function normalizeSchema(schema: FormSchema): NormalizedFormSchema {
   const fieldMap = new Map<string, NormalizedField>();
   const fieldOrder: string[] = [];
@@ -123,6 +129,7 @@ export function getInitialValues(schema: NormalizedFormSchema, values: FormValue
   return initialValues;
 }
 
+/** Return all normalized value-producing fields in schema order. */
 export function flattenFields(schema: NormalizedFormSchema): NormalizedField[] {
   return schema.fieldOrder
     .map((fieldName) => schema.fieldMap.get(fieldName))

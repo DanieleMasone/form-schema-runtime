@@ -65,6 +65,7 @@ function commonAttributes(context: FieldRenderContext): Record<string, string | 
   };
 }
 
+/** Build shared label, help, and error DOM using safe text nodes only. */
 function createFieldShell(context: FieldRenderContext): HTMLDivElement {
   const { classPrefix, errors, errorId, field, helpId, inputId } = context;
   const shell = createElement("div", {
@@ -257,6 +258,7 @@ export function createDefaultFieldContext(
   const helpId = createHelpDomId(inputId);
   const errorId = createErrorDomId(inputId);
   const errors = state.errors[field.name] ?? [];
+  // `aria-describedby` references only elements that are present in the DOM.
   const describedBy = [field.helpText ? helpId : "", errors.length > 0 ? errorId : ""]
     .filter(Boolean)
     .join(" ");

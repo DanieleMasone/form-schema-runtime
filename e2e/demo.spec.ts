@@ -29,6 +29,8 @@ test("payment form validates custom money and invoice fields", async ({ page }) 
   await page.goto("/");
   await page.getByLabel("Example schema").selectOption("payment-details");
 
+  await expect(page.getByLabel("Mock payment token")).toHaveAttribute("type", "password");
+
   await page.getByLabel("Amount").fill("0");
   await page.getByRole("button", { name: "Save payment details" }).click();
 
@@ -124,4 +126,37 @@ test("basic keyboard navigation reaches native controls", async ({ page }) => {
 
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Dark mode")).toBeFocused();
+});
+
+test("desktop viewport keeps demo panels readable without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "Rendered form" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Active schema" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "API docs" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Coverage" })).toBeVisible();
+
+  const hasHorizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+  );
+  expect(hasHorizontalOverflow).toBe(false);
+});
+
+test("mobile viewport keeps controls usable without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "Form Schema Runtime" })).toBeVisible();
+  await expect(page.getByLabel("Example schema")).toBeVisible();
+  await expect(page.getByLabel("Dark mode")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Rendered form" })).toBeVisible();
+
+  await page.getByLabel("First name *").fill("Ada");
+  await expect(page.getByText('"firstName": "Ada"')).toBeVisible();
+
+  const hasHorizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+  );
+  expect(hasHorizontalOverflow).toBe(false);
 });

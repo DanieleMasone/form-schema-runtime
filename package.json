@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Framework-agnostic TypeScript runtime for rendering accessible HTML forms from declarative schemas.",
   "type": "module",
-  "packageManager": "npm@10.9.8",
+  "packageManager": "npm@11.17.0",
   "license": "MIT",
   "author": "Daniele Masone",
   "sideEffects": [
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.61.0",
-    "@types/node": "^25.9.3",
+    "@types/node": "^24.13.2",
     "@vitest/coverage-v8": "^4.1.9",
     "eslint": "^10.5.0",
     "globals": "^17.6.0",

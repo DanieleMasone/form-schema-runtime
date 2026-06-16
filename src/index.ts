@@ -110,6 +110,8 @@ export function createForm(options: CreateFormOptions): FormInstance {
   }
 
   function render(): void {
+    // Re-rendering replaces the owned subtree; listener cleanup runs first so
+    // custom renderers cannot leak handlers across conditional/state changes.
     events.cleanup();
     events = createEventRegistry();
     options.container.replaceChildren(
@@ -128,6 +130,8 @@ export function createForm(options: CreateFormOptions): FormInstance {
   }
 
   function validateInternal(shouldNotify: boolean): boolean {
+    // Validation is computed against the current visibility snapshot before the
+    // form is re-rendered with field-level errors and the summary.
     const result = validateForm(schema, state.getValues(), options.validators, getVisibleFields());
     state.setErrors(result.errors);
     render();
@@ -201,6 +205,8 @@ export function createForm(options: CreateFormOptions): FormInstance {
         return;
       }
 
+      // Destroy is idempotent so callers can safely clean up during route or
+      // widget teardown without coordinating ownership state.
       events.cleanup();
       options.container.replaceChildren();
       destroyed = true;

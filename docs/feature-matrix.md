@@ -6,7 +6,7 @@ This checklist tracks public runtime features against implementation, documentat
 
 | Feature | Implemented | Documented | Demo | Tests |
 | --- | --- | --- | --- | --- |
-| text, email, number, password, textarea | yes | README, API docs | customer onboarding | unit |
+| text, email, number, password, textarea | yes | README, API docs | customer onboarding, payment details | unit, e2e |
 | select, checkbox, radio | yes | README, API docs | enterprise access request | unit, e2e |
 | section/group | yes | README, API docs | customer onboarding | unit |
 | label and placeholder | yes | README, API docs | customer onboarding | unit |

@@ -51,12 +51,13 @@ export const examples: DemoExample[] = [
     label: "Payment details",
     schema: paymentDetailsSchema,
     initialValues: paymentDetailsInitialValues,
-    summary: "A mock payment form demonstrating a custom money renderer, numeric validation, pattern validation, and security-safe schema text.",
+    summary: "A mock payment form demonstrating a custom money renderer, password control, numeric validation, pattern validation, and security-safe schema text.",
     guidance: [
       "The amount field is rendered through the custom renderer registry.",
+      "The mock payment token demonstrates native password rendering without collecting real secrets.",
       "Set amount to 0 and submit to see numeric validation from a custom-rendered field.",
       "Switch payment method to Corporate card to reveal the card-last-four pattern field."
     ],
-    features: ["custom renderer", "number validation", "pattern", "required", "help text", "conditional field"]
+    features: ["custom renderer", "password", "number validation", "pattern", "required", "help text", "conditional field"]
   }
 ];

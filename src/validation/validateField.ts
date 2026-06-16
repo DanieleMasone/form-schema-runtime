@@ -15,6 +15,7 @@ export function validateField(
   validators: CustomValidatorMap = {}
 ): string[] {
   const builtInErrors = runBuiltInValidators(field, value);
+  // Custom validators are synchronous and named explicitly to keep schema data non-executable.
   const customErrors =
     field.validators?.flatMap((validatorName) => {
       const validator = validators[validatorName];

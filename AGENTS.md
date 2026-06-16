@@ -47,22 +47,29 @@
 ## CI and Build Expectations
 
 - Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, build, Playwright, and Pages deployment.
+- Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
+- Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.
+- Keep TypeScript and TypeDoc on an officially supported pairing. Do not rely on a passing build when TypeDoc's declared peer range excludes the TypeScript version.
 - Do not add matrix builds unless there is a demonstrated compatibility reason.
 - Do not commit generated build outputs.
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
 - Pages artifact structure should remain root demo, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
-- Avoid dependency bloat; do not keep direct dependencies that are only transitive toolchain details.
+- Avoid dependency bloat; do not keep direct dependencies, scripts, or generated artifacts that are only transitive toolchain details.
 
 ## Documentation Expectations
 
 - Keep README aligned with actual implementation.
+- Add meaningful English JSDoc for public and semi-public runtime types, hooks, render contexts, validators, state snapshots, and errors.
+- Comment complex internal flows only where the comment explains an invariant, lifecycle edge, accessibility behavior, or cleanup responsibility.
 - Document extension points that exist today.
+- Keep `docs/market-positioning.md` aligned with the library's framework-agnostic position and explicit non-goals.
 - Avoid speculative Roadmap sections unless explicitly requested.
 - Keep generated API docs focused on public exports from `src/index.ts`.
 - Keep GitHub Pages useful and deployable: root demo plus `/api/` docs and `/coverage/` report.
+- Keep the demo useful on desktop and mobile: no horizontal overflow, readable inspector panels, usable native controls, and visible links to API docs and coverage.
 - Keep demo UI helpers, schema metadata, and repeated rendering helpers centralized when it improves readability.
 
 ## What Not To Do

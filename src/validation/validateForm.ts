@@ -21,6 +21,7 @@ export function validateForm(
   const visibleFieldSet = new Set(visibleFields);
   const errors: FieldErrors = {};
 
+  // Hidden conditional fields are skipped so stale required errors do not block submission.
   schema.fieldOrder.forEach((fieldName) => {
     if (!visibleFieldSet.has(fieldName)) {
       return;

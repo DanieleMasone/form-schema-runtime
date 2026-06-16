@@ -4,10 +4,13 @@ import type { FieldRenderer } from "./renderField";
 export type RendererMap = Record<string, FieldRenderer>;
 
 export interface RendererRegistry {
+  /** Return a renderer for the given field type, if one was registered. */
   get(type: string): FieldRenderer | undefined;
+  /** Register or replace a renderer for a custom field type. */
   register(type: string, renderer: FieldRenderer): void;
 }
 
+/** Create the small renderer lookup used by built-in and custom fields. */
 export function createRendererRegistry(renderers: RendererMap = {}): RendererRegistry {
   const registry = new Map<string, FieldRenderer>();
 

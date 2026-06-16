@@ -32,6 +32,15 @@ export const paymentDetailsSchema: FormSchema = {
           min: 1,
           max: 250000,
           helpText: "Custom money renderer registered by the demo application."
+        },
+        {
+          type: "password",
+          name: "paymentToken",
+          label: "Mock payment token",
+          minLength: 8,
+          maxLength: 32,
+          placeholder: "sandbox-token",
+          helpText: "Optional sandbox token field. Do not enter real secrets."
         }
       ]
     },

@@ -244,6 +244,8 @@ Responsibilities are intentionally small:
 
 The core design decision is documented in [docs/adr/0001-framework-agnostic-typescript-core.md](docs/adr/0001-framework-agnostic-typescript-core.md).
 
+The market positioning and v1 scope boundaries are documented in [docs/market-positioning.md](docs/market-positioning.md).
+
 ## Demo
 
 Run the Vite demo:
@@ -326,7 +328,7 @@ npm run preview
 
 Unit tests use Vitest and jsdom. Coverage includes schema normalization, validators, custom validators, state tracking, reset behavior, conditional logic, renderer registry behavior, DOM rendering, and accessibility attributes where practical.
 
-Playwright E2E tests cover the built static demo under the GitHub Pages base path, schema switching, required validation, error summary focus, conditional fields, reset, dark mode, inspector panels, project links, and basic keyboard navigation.
+Playwright E2E tests cover the built static demo under the GitHub Pages base path, schema switching, required validation, error summary focus, conditional fields, custom renderer behavior, reset, dark mode, inspector panels, project links, basic keyboard navigation, and desktop/mobile viewport smoke checks.
 
 Coverage is generated from the unit suite with V8 coverage and published under `/coverage/` as part of the GitHub Pages artifact.
 
@@ -350,6 +352,8 @@ Playwright tests
 upload Pages artifact on main
 deploy Pages on main
 ```
+
+CI uses Node 24 LTS with the npm version declared in `packageManager`. The TypeScript and TypeDoc versions are kept on a declared compatible pairing before generated API docs are trusted.
 
 No generated coverage reports or generated docs are committed.
 

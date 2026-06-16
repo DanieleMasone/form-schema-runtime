@@ -6,6 +6,7 @@ function sanitizeIdPart(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Generate deterministic DOM IDs without trusting schema text as raw attributes. */
 export function createFieldDomId(schemaId: string, fieldName: string, classPrefix: string): string {
   return `${sanitizeIdPart(classPrefix)}-${sanitizeIdPart(schemaId)}-${sanitizeIdPart(fieldName)}`;
 }

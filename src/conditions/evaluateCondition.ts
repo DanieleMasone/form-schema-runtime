@@ -4,6 +4,7 @@ function hasValue(value: FieldValue): boolean {
   return value !== undefined && value !== null && value !== "";
 }
 
+/** Evaluate one intentionally small, non-executable visibility condition. */
 function evaluateSingleCondition(condition: VisibilityCondition, values: FormValues): boolean {
   const actualValue = values[condition.field];
 
@@ -34,6 +35,7 @@ function evaluateSingleCondition(condition: VisibilityCondition, values: FormVal
   return true;
 }
 
+/** Evaluate a missing rule, a single condition, or a simple AND array. */
 export function evaluateCondition(rule: VisibilityRule | undefined, values: FormValues): boolean {
   if (!rule) {
     return true;

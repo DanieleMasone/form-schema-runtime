@@ -342,11 +342,29 @@ textarea {
 }
 
 @media (max-width: 740px) {
+  .demo-hero,
+  .demo-toolbar,
+  .demo-content {
+    padding-inline: 0.85rem;
+  }
+
   .demo-feature-grid {
     grid-template-columns: 1fr;
   }
 
   .demo-status {
     margin-left: 0;
+    width: 100%;
+    border-radius: 6px;
+  }
+
+  .demo-code-block pre {
+    max-height: 18rem;
+    font-size: 0.74rem;
+  }
+
+  .demo-tag {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 }
