@@ -47,6 +47,8 @@
     "framework-agnostic"
   ],
   "devDependencies": {
+    "@emnapi/core": "^1.11.1",
+    "@emnapi/runtime": "^1.11.1",
     "@eslint/js": "^9.29.0",
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.32",
