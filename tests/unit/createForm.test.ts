@@ -262,6 +262,43 @@ describe("createForm public API", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
+  it("lets custom renderers mark their field as touched before value changes", () => {
+    const container = document.createElement("div");
+    const onChange = vi.fn();
+    const touchRenderer: FieldRenderer = (context) => {
+      const input = document.createElement("input");
+      input.id = context.inputId;
+      input.name = context.field.name;
+      input.value = String(context.value ?? "");
+      context.events.listen(input, "input", () => {
+        context.markTouched();
+        context.setValue(input.value);
+      });
+      return input;
+    };
+
+    const form = createForm({
+      container,
+      schema: {
+        id: "custom-touch",
+        fields: [{ type: "touch", name: "approvalCode", label: "Approval code" }]
+      },
+      renderers: { touch: touchRenderer },
+      onChange
+    });
+
+    const approvalCode = input(container, "#fsr-custom-touch-approvalcode");
+
+    approvalCode.value = "APPROVED";
+    approvalCode.dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ approvalCode: "APPROVED" }),
+      expect.objectContaining({ touchedFields: ["approvalCode"] })
+    );
+    form.destroy();
+  });
+
   it("throws after destroy when public methods are reused", () => {
     const container = document.createElement("div");
     const form = createForm({ container, schema });

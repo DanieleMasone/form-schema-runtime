@@ -132,6 +132,177 @@ function unmount() {
 
 Keep framework-specific lifecycle code in the host application. Do not move framework dependencies into the runtime package.
 
+## React Integration
+
+React applications can mount the DOM runtime inside a ref-owned container. Keep schema and callback identity stable with `useMemo` and `useCallback` in the host app when possible, because changing those references intentionally recreates the form.
+
+```tsx
+import { useEffect, useRef } from "react";
+import { createForm, type FormInstance, type FormSchema, type FormValues } from "form-schema-runtime";
+import "form-schema-runtime/styles.css";
+
+interface RuntimeFormProps {
+  schema: FormSchema;
+  initialValues?: FormValues;
+  onSubmit(values: FormValues): void;
+}
+
+export function RuntimeForm({ schema, initialValues, onSubmit }: RuntimeFormProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const formRef = useRef<FormInstance | null>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) {
+      return;
+    }
+
+    formRef.current?.destroy();
+    formRef.current = createForm({
+      container: containerRef.current,
+      schema,
+      initialValues,
+      onSubmit
+    });
+
+    return () => {
+      formRef.current?.destroy();
+      formRef.current = null;
+    };
+  }, [schema, initialValues, onSubmit]);
+
+  return <div ref={containerRef} />;
+}
+```
+
+Guidance:
+
+- Import the runtime CSS once in the application entry point or wrapper.
+- Do not render React children inside the same container that the runtime owns.
+- Destroy and recreate the instance when the schema changes.
+- Memoize schema objects and callbacks if the wrapper should not remount on every render.
+
+## Angular Integration
+
+Angular applications can mount after the view initializes and destroy the runtime in `ngOnDestroy`. Import the CSS globally, for example in `src/styles.css`:
+
+```css
+@import "form-schema-runtime/styles.css";
+```
+
+Standalone component example:
+
+```ts
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from "@angular/core";
+import { createForm, type FormInstance, type FormSchema, type FormValues } from "form-schema-runtime";
+
+@Component({
+  selector: "runtime-form",
+  standalone: true,
+  template: `<div #container></div>`
+})
+export class RuntimeFormComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @Input({ required: true }) schema!: FormSchema;
+  @Input() initialValues?: FormValues;
+  @Output() submitted = new EventEmitter<FormValues>();
+  @ViewChild("container", { static: true }) private container!: ElementRef<HTMLDivElement>;
+
+  private form: FormInstance | null = null;
+  private viewReady = false;
+
+  ngAfterViewInit(): void {
+    this.viewReady = true;
+    this.mount();
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    if (this.viewReady) {
+      this.mount();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.form?.destroy();
+    this.form = null;
+  }
+
+  private mount(): void {
+    this.form?.destroy();
+    this.form = createForm({
+      container: this.container.nativeElement,
+      schema: this.schema,
+      initialValues: this.initialValues,
+      onSubmit: (values) => this.submitted.emit(values)
+    });
+  }
+}
+```
+
+Guidance:
+
+- Let Angular own the wrapper element and let the runtime own only its inner DOM.
+- Destroy the instance when Angular destroys the component.
+- Recreate the instance when replacing the schema or initial values.
+- Keep Angular validators and async workflows outside the schema runtime.
+
+## Vue Integration
+
+Vue applications can mount the runtime in `onMounted`, recreate it when props change, and clean it up in `onUnmounted`.
+
+```vue
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref, shallowRef, watch } from "vue";
+import { createForm, type FormInstance, type FormSchema, type FormValues } from "form-schema-runtime";
+import "form-schema-runtime/styles.css";
+
+const props = defineProps<{
+  schema: FormSchema;
+  initialValues?: FormValues;
+}>();
+
+const emit = defineEmits<{
+  submit: [values: FormValues];
+}>();
+
+const container = ref<HTMLDivElement | null>(null);
+const form = shallowRef<FormInstance | null>(null);
+
+function mount(): void {
+  if (!container.value) {
+    return;
+  }
+
+  form.value?.destroy();
+  form.value = createForm({
+    container: container.value,
+    schema: props.schema,
+    initialValues: props.initialValues,
+    onSubmit(values) {
+      emit("submit", values);
+    }
+  });
+}
+
+onMounted(mount);
+watch(() => [props.schema, props.initialValues], mount, { deep: false });
+
+onUnmounted(() => {
+  form.value?.destroy();
+  form.value = null;
+});
+</script>
+
+<template>
+  <div ref="container"></div>
+</template>
+```
+
+Guidance:
+
+- Import CSS in the wrapper or app entry.
+- Keep runtime-owned DOM out of Vue templates.
+- Prefer replacing the schema object when the form definition changes.
+- Use Vue for surrounding page state, routing, and API calls.
+
 ## ESM Usage
 
 ```ts
@@ -216,4 +387,3 @@ For server-rendered applications, you can render a fallback message or plain HTM
 - Custom renderers should use `context.events.listen()`.
 - Do not attach unmanaged listeners to long-lived globals from inside renderers.
 - Do not reuse a destroyed form instance.
-

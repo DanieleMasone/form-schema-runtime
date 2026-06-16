@@ -37,6 +37,7 @@ test("documentation links are visible and published in the Pages artifact", asyn
     ["Customization Guide", /docs\/customization-guide\.md$/],
     ["Accessibility Guide", /docs\/accessibility-guide\.md$/],
     ["Integration Guide", /docs\/integration-guide\.md$/],
+    ["Real-World Examples", /docs\/real-world-examples\.md$/],
     ["Release Process", /docs\/release-process\.md$/],
     ["API Documentation", /api\/$/],
     ["Coverage Report", /coverage\/$/],
@@ -65,6 +66,9 @@ test("documentation links are visible and published in the Pages artifact", asyn
 
   await page.goto("docs/integration-guide.md");
   await expect(page.getByText("# Integration Guide")).toBeVisible();
+
+  await page.goto("docs/real-world-examples.md");
+  await expect(page.getByText("# Real-World Examples")).toBeVisible();
 
   await page.goto("docs/release-process.md");
   await expect(page.getByText("# Release Process")).toBeVisible();

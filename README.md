@@ -69,6 +69,7 @@ Use the returned instance for `getValues`, `setValues`, `validate`, `reset`, and
 - [Customization Guide](docs/customization-guide.md)
 - [Accessibility Guide](docs/accessibility-guide.md)
 - [Integration Guide](docs/integration-guide.md)
+- [Real-World Examples](docs/real-world-examples.md)
 - [Release Process](docs/release-process.md)
 - [Generated API Docs](https://danielemasone.github.io/form-schema-runtime/api/)
 - [Feature Matrix](docs/feature-matrix.md)

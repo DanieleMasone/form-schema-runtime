@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { FormSchema } from "../../src";
-import { getInitialValues, normalizeSchema } from "../../src/schema/normalizeSchema";
+import { flattenFields, getInitialValues, normalizeSchema } from "../../src/schema/normalizeSchema";
 
 describe("normalizeSchema", () => {
   it("normalizes nested sections and initial values", () => {
@@ -71,5 +71,26 @@ describe("normalizeSchema", () => {
 
     expect(() => normalizeSchema(withoutOptions)).toThrow("requires at least one option");
     expect(() => normalizeSchema(duplicateOptions)).toThrow('duplicate option value "read"');
+  });
+
+  it("flattens only value-producing fields in schema order", () => {
+    const schema: FormSchema = {
+      id: "flattened",
+      fields: [
+        { type: "text", name: "firstName", label: "First name" },
+        {
+          type: "section",
+          title: "Nested",
+          fields: [
+            { type: "number", name: "age", label: "Age" },
+            { type: "checkbox", name: "confirmed", label: "Confirmed" }
+          ]
+        }
+      ]
+    };
+
+    const normalized = normalizeSchema(schema);
+
+    expect(flattenFields(normalized).map((field) => field.name)).toEqual(["firstName", "age", "confirmed"]);
   });
 });

@@ -1,6 +1,6 @@
 # Release Process
 
-This project publishes npm packages from GitHub Releases. A release is intentional only when a GitHub Release is published for a version tag such as `v0.1.0`.
+This project publishes npm packages from GitHub Releases. A release is intentional only when a GitHub Release is published for a version tag such as `v1.0.0`.
 
 ## Release Philosophy
 
@@ -79,8 +79,8 @@ All npm trusted publisher fields are case-sensitive. The package `repository.url
 Use semantic versions in `package.json` and matching Git tags:
 
 ```txt
-package.json version: 0.1.0
-GitHub Release tag: v0.1.0
+package.json version: 1.0.0
+GitHub Release tag: v1.0.0
 ```
 
 The release workflow rejects tags that do not match `v<semver>` or do not match the package version.
@@ -111,7 +111,7 @@ npm pack --dry-run
 
 1. Open GitHub Releases.
 2. Draft a new release.
-3. Create or select tag `v<package-version>`, for example `v0.1.0`.
+3. Create or select tag `v<package-version>`, for example `v1.0.0`.
 4. Set the release title to the tag or a concise release title.
 5. Use GitHub's generated release notes.
 6. Review the generated notes.
