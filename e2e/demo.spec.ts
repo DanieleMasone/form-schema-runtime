@@ -13,6 +13,16 @@ test("demo loads and switches schemas", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Enterprise access request" })).toBeVisible();
   await expect(page.getByText('"id": "enterprise-access-request"')).toBeVisible();
+
+  await page.getByLabel("Example schema").selectOption("payment-details");
+
+  await expect(page.getByRole("heading", { name: "Payment details" })).toBeVisible();
+  await expect(page.getByText('"type": "money"')).toBeVisible();
+
+  await page.getByLabel("Example schema").selectOption("customer-onboarding");
+
+  await expect(page.getByRole("heading", { name: "Customer onboarding" })).toBeVisible();
+  await expect(page.getByText('"id": "customer-onboarding"')).toBeVisible();
 });
 
 test("payment form validates custom money and invoice fields", async ({ page }) => {
@@ -28,11 +38,16 @@ test("payment form validates custom money and invoice fields", async ({ page }) 
 
 test("state panel updates after field changes", async ({ page }) => {
   await page.goto("/");
+  const statePanel = page.locator(".demo-code-block").filter({
+    has: page.getByRole("heading", { name: "Form state" })
+  });
 
   await page.getByLabel("First name *").fill("Ada");
+  await page.keyboard.press("Tab");
 
   await expect(page.getByText('"firstName": "Ada"')).toBeVisible();
-  await expect(page.getByText('"dirtyFields": [')).toBeVisible();
+  await expect(statePanel).toContainText('"dirtyFields": [');
+  await expect(statePanel).toContainText('"touchedFields": [');
 });
 
 test("required validation, error summary focus, and conditional fields work", async ({ page }) => {
@@ -49,14 +64,38 @@ test("required validation, error summary focus, and conditional fields work", as
   await expect(page.getByLabel("Company name *")).toBeVisible();
 });
 
+test("enterprise access request exercises readonly, disabled, and conditional fields", async ({ page }) => {
+  await page.goto("/");
+  await page.getByLabel("Example schema").selectOption("enterprise-access-request");
+
+  await expect(page.getByLabel("Source system")).toHaveAttribute("readonly", "");
+  await expect(page.getByLabel("Access window")).toBeDisabled();
+  await expect(page.getByLabel("Administrator access justification *")).toBeHidden();
+
+  await page.getByRole("radio", { name: "Administrator" }).check();
+
+  await expect(page.getByLabel("Administrator access justification *")).toBeVisible();
+
+  await page.getByRole("button", { name: "Submit request" }).click();
+
+  await expect(page.getByRole("alert").first()).toContainText("There is a problem with this form");
+  await expect(page.getByLabel("Administrator access justification *")).toHaveAttribute("aria-invalid", "true");
+});
+
 test("reset and dark mode update the demo", async ({ page }) => {
   await page.goto("/");
+
+  await page.getByRole("button", { name: "Create customer" }).click();
+  await expect(page.getByText("There is a problem with this form")).toBeVisible();
 
   await page.getByLabel("First name *").fill("Ada");
   await expect(page.getByText("Unsaved changes")).toBeVisible();
 
   await page.getByRole("button", { name: "Clear" }).click();
+
   await expect(page.getByLabel("First name *")).toHaveValue("");
+  await expect(page.getByText("There is a problem with this form")).toBeHidden();
+  await expect(page.locator(".demo-code-block").filter({ hasText: "Validation errors" })).toContainText("{}");
 
   await page.getByLabel("Dark mode").check();
   await expect(page.locator("body")).toHaveClass(/demo-dark/);

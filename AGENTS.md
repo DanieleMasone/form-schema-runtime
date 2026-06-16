@@ -47,7 +47,9 @@
 ## CI and Build Expectations
 
 - Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, build, Playwright, and Pages deployment.
+- Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
 - Do not add matrix builds unless there is a demonstrated compatibility reason.
+- Do not commit generated build outputs.
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.

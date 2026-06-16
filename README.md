@@ -326,9 +326,11 @@ npm run preview
 
 Unit tests use Vitest and jsdom. Coverage includes schema normalization, validators, custom validators, state tracking, reset behavior, conditional logic, renderer registry behavior, DOM rendering, and accessibility attributes where practical.
 
-Playwright E2E tests cover demo loading, schema switching, required validation, error summary focus, conditional fields, reset, dark mode, and basic keyboard navigation.
+Playwright E2E tests cover the built static demo under the GitHub Pages base path, schema switching, required validation, error summary focus, conditional fields, reset, dark mode, inspector panels, project links, and basic keyboard navigation.
 
 Coverage is generated from the unit suite with V8 coverage and published under `/coverage/` as part of the GitHub Pages artifact.
+
+The public feature checklist is maintained in [docs/feature-matrix.md](docs/feature-matrix.md).
 
 ## CI/CD
 

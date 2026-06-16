@@ -15,6 +15,7 @@ export type BuiltInFieldType =
   | "checkbox"
   | "radio";
 
+/** Built-in field type or a custom renderer type registered by the host application. */
 export type FieldType = BuiltInFieldType | (string & {});
 
 /** Option used by `select` and `radio` fields. */
@@ -50,10 +51,14 @@ export type ValidationMessageKey =
   | "email"
   | "number";
 
+/** Optional per-field overrides for built-in validation messages. */
 export type ValidationMessages = Partial<Record<ValidationMessageKey, string>>;
 
+/** Shared schema properties supported by both fields and sections. */
 export interface BaseSchemaNode {
+  /** Optional stable identifier used when deriving DOM IDs and schema paths. */
   id?: string;
+  /** Declarative condition that controls whether this node is currently visible. */
   visibleWhen?: VisibilityRule;
 }
 
@@ -139,13 +144,18 @@ export type CustomValidator = (
   context: CustomValidatorContext
 ) => string | null;
 
+/** Custom synchronous validators keyed by the names referenced in field schemas. */
 export type CustomValidatorMap = Record<string, CustomValidator>;
 
+/** Single validation error associated with a field. */
 export interface FieldError {
+  /** Name of the field that failed validation. */
   fieldName: string;
+  /** Human-readable validation message. */
   message: string;
 }
 
+/** Validation errors keyed by field name. */
 export type FieldErrors = Record<string, string[]>;
 
 /** Immutable snapshot passed to form event hooks. */
