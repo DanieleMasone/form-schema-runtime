@@ -31,7 +31,10 @@
       "import": "./dist/form-schema-runtime.js",
       "default": "./dist/form-schema-runtime.js"
     },
-    "./styles.css": "./dist/form-schema-runtime.css"
+    "./styles.css": {
+      "types": "./dist/types/styles.css.d.ts",
+      "default": "./dist/form-schema-runtime.css"
+    }
   },
   "unpkg": "./dist/form-schema-runtime.iife.js",
   "jsdelivr": "./dist/form-schema-runtime.iife.js",
@@ -51,6 +54,7 @@
     "lint": "eslint .",
     "test": "vitest --run",
     "test:coverage": "vitest --run --coverage",
+    "test:consumer": "node scripts/smoke-consumer.mjs",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

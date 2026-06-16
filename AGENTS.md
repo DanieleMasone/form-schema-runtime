@@ -50,6 +50,7 @@
 - Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
 - Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.
+- Run the consumer smoke test before any public release: `npm run test:consumer`.
 - Keep TypeScript and TypeDoc on an officially supported pairing. Do not rely on a passing build when TypeDoc's declared peer range excludes the TypeScript version.
 - Do not add matrix builds unless there is a demonstrated compatibility reason.
 - Do not commit generated build outputs.
@@ -59,7 +60,11 @@
 - Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
+- Release tags must exactly match `package.json` versions, for example `0.1.0` requires `v0.1.0`.
+- The first public npm publish should be `v0.1.0`, or `v1.0.0-rc.1` only when the repository owner explicitly chooses a v1 release-candidate track.
+- Do not publish `v1.0.0` until npm installation, ESM import, CSS import, TypeScript declarations, IIFE availability, and provenance have been verified from the public package.
 - Do not add generated npm package tarballs, generated build output, generated coverage, generated TypeDoc output, or Playwright reports to commits.
+- Do not commit temporary package consumer projects.
 - Avoid dependency bloat; do not keep direct dependencies, scripts, or generated artifacts that are only transitive toolchain details.
 
 ## Documentation Expectations

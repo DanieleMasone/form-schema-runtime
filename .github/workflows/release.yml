@@ -48,6 +48,9 @@ jobs:
       - name: Build package and docs
         run: npm run build
 
+      - name: Consumer smoke test
+        run: npm run test:consumer
+
       - name: Verify package contents
         run: node scripts/verify-release.mjs --tag "${{ github.event.release.tag_name }}" --pack
 

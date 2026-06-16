@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const PACKAGE_NAME = "form-schema-runtime";
@@ -10,17 +10,32 @@ const EXPECTED_FILES = [
   "dist/form-schema-runtime.iife.js",
   "dist/form-schema-runtime.js",
   "dist/types/index.d.ts",
+  "dist/types/styles.css.d.ts",
   "package.json"
 ];
+const EXPECTED_BUILT_FILES = [
+  "dist/form-schema-runtime.css",
+  "dist/form-schema-runtime.iife.js",
+  "dist/form-schema-runtime.js",
+  "dist/types/index.d.ts",
+  "dist/types/styles.css.d.ts"
+];
 const FORBIDDEN_PACKAGE_PATHS = [
+  ".cache/",
+  ".tmp/",
+  ".vite/",
+  ".vitest/",
+  "blob-report/",
   "coverage/",
   "demo/",
   "dist-demo/",
   "docs/",
   "e2e/",
+  "playwright-report/",
   "src/",
   "test-results/",
-  "tests/"
+  "tests/",
+  "tmp/"
 ];
 
 const args = process.argv.slice(2);
@@ -28,6 +43,7 @@ const tagArgIndex = args.indexOf("--tag");
 const releaseTag = tagArgIndex >= 0 ? args[tagArgIndex + 1] : undefined;
 const shouldVerifyPack = args.includes("--pack");
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 
 function fail(message) {
   console.error(message);
@@ -56,17 +72,38 @@ function validatePackageMetadata() {
   assert(Array.isArray(packageJson.keywords) && packageJson.keywords.length > 0, "package.json keywords must be present.");
   assert(Array.isArray(packageJson.sideEffects) && packageJson.sideEffects.includes("**/*.css"), "CSS side effects must be declared.");
   assert(JSON.stringify(packageJson.files) === JSON.stringify(["dist", "README.md", "LICENSE"]), "package.json files must publish only dist, README.md, and LICENSE.");
+  assert(packageJson.exports?.["."], 'package.json exports must include ".".');
+  assert(packageJson.exports?.["./styles.css"], 'package.json exports must include "./styles.css".');
   assert(packageJson.main === "./dist/form-schema-runtime.js", "package.json main is incorrect.");
   assert(packageJson.module === "./dist/form-schema-runtime.js", "package.json module is incorrect.");
   assert(packageJson.types === "./dist/types/index.d.ts", "package.json types is incorrect.");
   assert(packageJson.exports?.["."]?.types === "./dist/types/index.d.ts", "Root export must expose declaration types.");
   assert(packageJson.exports?.["."]?.import === "./dist/form-schema-runtime.js", "Root export must expose ESM import.");
   assert(packageJson.exports?.["."]?.default === "./dist/form-schema-runtime.js", "Root export must expose a default runtime path.");
-  assert(packageJson.exports?.["./styles.css"] === "./dist/form-schema-runtime.css", "CSS export must expose ./styles.css.");
+  assert(packageJson.exports?.["./styles.css"]?.types === "./dist/types/styles.css.d.ts", "CSS export must expose declaration types.");
+  assert(packageJson.exports?.["./styles.css"]?.default === "./dist/form-schema-runtime.css", "CSS export must expose ./styles.css.");
   assert(packageJson.unpkg === "./dist/form-schema-runtime.iife.js", "unpkg IIFE path is incorrect.");
   assert(packageJson.jsdelivr === "./dist/form-schema-runtime.iife.js", "jsDelivr IIFE path is incorrect.");
   assert(packageJson.publishConfig?.access === "public", "publishConfig.access must be public.");
   assert(packageJson.private !== true, "Package must not be private.");
+}
+
+function assertBuiltFile(relativePath, label) {
+  const normalizedPath = relativePath.replace(/^\.\//, "");
+  const absolutePath = fileURLToPath(new URL(`../${normalizedPath}`, import.meta.url));
+
+  assert(existsSync(absolutePath), `${label} is missing after build: ${relativePath}.`);
+}
+
+function validateBuiltOutput() {
+  EXPECTED_BUILT_FILES.forEach((file) => assertBuiltFile(file, "Expected build output"));
+  assertBuiltFile(packageJson.module, "ESM entry");
+  assertBuiltFile(packageJson.main, "Main entry");
+  assertBuiltFile(packageJson.unpkg, "IIFE entry");
+  assertBuiltFile(packageJson.exports["./styles.css"].default, "CSS export");
+  assertBuiltFile(packageJson.exports["./styles.css"].types, "CSS export declaration entry");
+  assertBuiltFile(packageJson.types, "Declaration entry");
+  assertBuiltFile(packageJson.exports["."].types, "Root export declaration entry");
 }
 
 function validateReleaseTag() {
@@ -91,7 +128,7 @@ function validatePackContents() {
     ? [npmExecPath, "pack", "--dry-run", "--json"]
     : ["pack", "--dry-run", "--json"];
   const output = execFileSync(command, args, {
-    cwd: fileURLToPath(new URL("..", import.meta.url)),
+    cwd: repositoryRoot,
     encoding: "utf8",
     env: {
       ...process.env,
@@ -107,6 +144,8 @@ function validatePackContents() {
   });
 
   files.forEach((file) => {
+    assert(!file.endsWith(".tgz"), `Package dry-run includes forbidden tarball ${file}.`);
+
     FORBIDDEN_PACKAGE_PATHS.forEach((prefix) => {
       assert(!file.startsWith(prefix), `Package dry-run includes forbidden path ${file}.`);
     });
@@ -117,6 +156,7 @@ validatePackageMetadata();
 validateReleaseTag();
 
 if (shouldVerifyPack) {
+  validateBuiltOutput();
   validatePackContents();
 }
 
