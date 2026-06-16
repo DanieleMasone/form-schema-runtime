@@ -65,6 +65,12 @@
 - Add meaningful English JSDoc for public and semi-public runtime types, hooks, render contexts, validators, state snapshots, and errors.
 - Comment complex internal flows only where the comment explains an invariant, lifecycle edge, accessibility behavior, or cleanup responsibility.
 - Document extension points that exist today.
+- Keep usage documentation aligned with the public API, schema model, validation behavior, customization hooks, accessibility behavior, and lifecycle semantics.
+- Update usage docs when schema, validation, customization, accessibility, integration, or lifecycle behavior changes.
+- Do not document unsupported features or imply that non-goals are available.
+- Do not turn README into a full manual; link to focused docs under `docs/`.
+- Keep demo documentation links working in the GitHub Pages artifact.
+- Keep examples executable or close to executable.
 - Keep `docs/market-positioning.md` aligned with the library's framework-agnostic position and explicit non-goals.
 - Avoid speculative Roadmap sections unless explicitly requested.
 - Keep generated API docs focused on public exports from `src/index.ts`.

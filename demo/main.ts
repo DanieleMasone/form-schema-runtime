@@ -42,6 +42,34 @@ function createCodePanel(title: string): { panel: HTMLElement; code: HTMLPreElem
   return { panel, code };
 }
 
+function createDocumentationPanel(): HTMLElement {
+  const { panel, body } = createPanel("Documentation");
+  const links = el("nav", { className: "demo-doc-links", attributes: { "aria-label": "Documentation links" } });
+
+  [
+    ["Usage Guide", "docs/usage-guide.md"],
+    ["Schema Reference", "docs/schema-reference.md"],
+    ["Validation Guide", "docs/validation-guide.md"],
+    ["Customization Guide", "docs/customization-guide.md"],
+    ["Accessibility Guide", "docs/accessibility-guide.md"],
+    ["Integration Guide", "docs/integration-guide.md"],
+    ["API Documentation", "api/"],
+    ["Coverage Report", "coverage/"]
+  ].forEach(([label, href]) => {
+    links.append(externalLink(label, href));
+  });
+
+  body.append(
+    el("p", {
+      className: "demo-example-summary",
+      text: "Start with the usage guide, then use the focused references for schemas, validation, customization, accessibility, and integration."
+    }),
+    links
+  );
+
+  return panel;
+}
+
 function createHero(): HTMLElement {
   const hero = el("section", { className: "demo-hero" });
   const copy = el("div", { className: "demo-hero-copy" });
@@ -101,6 +129,7 @@ const leftColumn = el("div", { className: "demo-stack" });
 const rightColumn = el("div", { className: "demo-stack" });
 const formPanel = createPanel("Rendered form", "demo-form-panel");
 const explainPanel = createPanel("What this demonstrates");
+const documentationPanel = createDocumentationPanel();
 const schemaPanel = createCodePanel("Active schema");
 const valuesPanel = createCodePanel("Current values");
 const statePanel = createCodePanel("Form state");
@@ -117,7 +146,7 @@ examples.forEach((example) => {
 darkToggleLabel.append(darkToggle, document.createTextNode("Dark mode"));
 schemaControl.append(schemaLabel, schemaSelect);
 toolbar.append(schemaControl, darkToggleLabel, statusText);
-leftColumn.append(explainPanel.panel, formPanel.panel);
+leftColumn.append(documentationPanel, explainPanel.panel, formPanel.panel);
 rightColumn.append(schemaPanel.panel, valuesPanel.panel, statePanel.panel, errorsPanel.panel, submitPanel.panel);
 content.append(leftColumn, rightColumn);
 shell.append(hero, toolbar, content);

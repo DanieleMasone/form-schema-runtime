@@ -70,6 +70,19 @@ const form = createForm({
 });
 ```
 
+## Documentation
+
+- [Usage Guide](docs/usage-guide.md)
+- [Schema Reference](docs/schema-reference.md)
+- [Validation Guide](docs/validation-guide.md)
+- [Customization Guide](docs/customization-guide.md)
+- [Accessibility Guide](docs/accessibility-guide.md)
+- [Integration Guide](docs/integration-guide.md)
+- [Generated API Docs](https://danielemasone.github.io/form-schema-runtime/api/)
+- [Feature Matrix](docs/feature-matrix.md)
+- [Market Positioning](docs/market-positioning.md)
+- [Coverage Report](https://danielemasone.github.io/form-schema-runtime/coverage/)
+
 ## Public API
 
 ```ts
@@ -263,7 +276,7 @@ The demo includes:
 - Feature notes explaining validation, conditional fields, and custom renderers.
 - Dark mode through CSS variables.
 - Custom `money` renderer.
-- Links to GitHub, generated API docs, coverage, and implementation examples.
+- Links to usage documentation, GitHub, generated API docs, coverage, and implementation examples.
 
 Build the static demo for GitHub Pages:
 
@@ -271,7 +284,7 @@ Build the static demo for GitHub Pages:
 npm run build
 ```
 
-The site output is written to `dist-demo`. The root contains the live demo, `dist-demo/api/` contains generated TypeDoc API documentation, and `dist-demo/coverage/` contains the generated Vitest coverage report when `npm run test:coverage` has been run before build.
+The site output is written to `dist-demo`. The root contains the live demo, `dist-demo/docs/` contains Markdown usage documentation, `dist-demo/api/` contains generated TypeDoc API documentation, and `dist-demo/coverage/` contains the generated Vitest coverage report when `npm run test:coverage` has been run before build.
 
 ## API Documentation
 
@@ -312,6 +325,7 @@ npm run build
 npm run build:lib
 npm run build:demo
 npm run build:docs
+npm run build:site-docs
 npm run build:coverage
 npm run docs
 npm run typecheck
@@ -346,7 +360,7 @@ typecheck
 lint
 unit tests
 coverage report
-build library, demo, API docs, and coverage page
+build library, demo, API docs, Markdown docs, and coverage page
 install Playwright browsers
 Playwright tests
 upload Pages artifact on main

@@ -6,7 +6,7 @@ test("demo loads and switches schemas", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Form Schema Runtime" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Customer onboarding" })).toBeVisible();
   await expect(page.getByRole("link", { name: "API docs" })).toHaveAttribute("href", /api\/$/);
-  await expect(page.getByRole("link", { name: "Coverage" })).toHaveAttribute("href", /coverage\/$/);
+  await expect(page.getByRole("link", { name: "Coverage", exact: true })).toHaveAttribute("href", /coverage\/$/);
   await expect(page.getByRole("heading", { name: "Active schema" })).toBeVisible();
 
   await page.getByLabel("Example schema").selectOption("enterprise-access-request");
@@ -23,6 +23,46 @@ test("demo loads and switches schemas", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Customer onboarding" })).toBeVisible();
   await expect(page.getByText('"id": "customer-onboarding"')).toBeVisible();
+});
+
+test("documentation links are visible and published in the Pages artifact", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "Documentation" })).toBeVisible();
+
+  const docs = [
+    ["Usage Guide", /docs\/usage-guide\.md$/],
+    ["Schema Reference", /docs\/schema-reference\.md$/],
+    ["Validation Guide", /docs\/validation-guide\.md$/],
+    ["Customization Guide", /docs\/customization-guide\.md$/],
+    ["Accessibility Guide", /docs\/accessibility-guide\.md$/],
+    ["Integration Guide", /docs\/integration-guide\.md$/],
+    ["API Documentation", /api\/$/],
+    ["Coverage Report", /coverage\/$/]
+  ] as const;
+
+  for (const [name, href] of docs) {
+    await expect(page.getByRole("link", { name })).toBeVisible();
+    await expect(page.getByRole("link", { name })).toHaveAttribute("href", href);
+  }
+
+  await page.goto("docs/usage-guide.md");
+  await expect(page.getByText("# Usage Guide")).toBeVisible();
+
+  await page.goto("docs/schema-reference.md");
+  await expect(page.getByText("# Schema Reference")).toBeVisible();
+
+  await page.goto("docs/validation-guide.md");
+  await expect(page.getByText("# Validation Guide")).toBeVisible();
+
+  await page.goto("docs/customization-guide.md");
+  await expect(page.getByText("# Customization Guide")).toBeVisible();
+
+  await page.goto("docs/accessibility-guide.md");
+  await expect(page.getByText("# Accessibility Guide")).toBeVisible();
+
+  await page.goto("docs/integration-guide.md");
+  await expect(page.getByText("# Integration Guide")).toBeVisible();
 });
 
 test("payment form validates custom money and invoice fields", async ({ page }) => {
@@ -113,7 +153,7 @@ test("basic keyboard navigation reaches native controls", async ({ page }) => {
   await expect(page.getByRole("link", { name: "API docs" })).toBeFocused();
 
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("link", { name: "Coverage" })).toBeFocused();
+  await expect(page.getByRole("link", { name: "Coverage", exact: true })).toBeFocused();
 
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Custom validators" })).toBeFocused();
@@ -135,7 +175,7 @@ test("desktop viewport keeps demo panels readable without horizontal overflow", 
   await expect(page.getByRole("heading", { name: "Rendered form" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Active schema" })).toBeVisible();
   await expect(page.getByRole("link", { name: "API docs" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Coverage" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Coverage", exact: true })).toBeVisible();
 
   const hasHorizontalOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1

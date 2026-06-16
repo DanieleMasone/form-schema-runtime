@@ -29,10 +29,11 @@
   "jsdelivr": "./dist/form-schema-runtime.iife.js",
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
-    "build": "npm run build:lib && npm run build:demo && npm run build:docs && npm run build:coverage",
+    "build": "npm run build:lib && npm run build:demo && npm run build:docs && npm run build:site-docs && npm run build:coverage",
     "build:lib": "vite build --config vite.config.ts && tsc -p tsconfig.build.json",
     "build:demo": "vite build --config vite.demo.config.ts",
     "build:docs": "typedoc --options typedoc.json",
+    "build:site-docs": "node scripts/copy-docs.mjs",
     "build:coverage": "node scripts/copy-coverage.mjs",
     "docs": "typedoc --options typedoc.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",

@@ -116,6 +116,7 @@ textarea {
 }
 
 .demo-links,
+.demo-doc-links,
 .demo-feature-tags {
   display: flex;
   flex-wrap: wrap;
@@ -124,6 +125,10 @@ textarea {
 
 .demo-links {
   margin-top: 0.3rem;
+}
+
+.demo-doc-links {
+  margin-top: 0.85rem;
 }
 
 .demo-link {
