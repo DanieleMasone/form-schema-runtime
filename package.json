@@ -1,6 +1,6 @@
 {
   "name": "form-schema-runtime",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Framework-agnostic TypeScript runtime for rendering accessible HTML forms from declarative schemas.",
   "type": "module",
   "packageManager": "npm@11.17.0",
