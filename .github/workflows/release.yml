@@ -57,5 +57,8 @@ jobs:
       - name: npm pack dry run
         run: npm pack --dry-run
 
+      - name: Check npm version availability
+        run: node scripts/verify-release.mjs --tag "${{ github.event.release.tag_name }}" --check-published
+
       - name: Publish to npm
         run: npm publish --access public

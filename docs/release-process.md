@@ -2,25 +2,24 @@
 
 This project publishes npm packages from GitHub Releases. Publishing is intentional only when a GitHub Release is published for a tag that exactly matches `package.json`.
 
-## First Public Publication
+## Published Versions And Next Release
 
-Preferred first public package publication:
+The first public npm publication has already happened:
 
-- `v0.1.0`
+- npm package: `form-schema-runtime`
+- published version: `0.1.0`
+- GitHub Release: `v0.1.0`
 
-Alternative only if the repository owner explicitly wants a v1 track:
+npm package versions are immutable. Re-running the `v0.1.0` release workflow cannot overwrite `form-schema-runtime@0.1.0`; npm will reject the publish with an error that the version was previously published.
 
-- `v1.0.0-rc.1`
+Do not rerun the `v0.1.0` release expecting npm to overwrite the package. Do not unpublish `0.1.0`, delete the GitHub Release, force-push the tag, or create replacement tags unless explicitly requested by the repository owner.
 
-Do not publish `v1.0.0` directly until the package has been installed and verified from npm. The first public publish should validate real package consumption, provenance, npm metadata, and install behavior before the project declares a stable v1.
+The next automated release must use a new version, for example:
 
-After the first publish, verify:
+- package version: `0.1.1`
+- GitHub Release tag: `v0.1.1`
 
-- ESM import: `import { createForm } from "form-schema-runtime"`
-- CSS import: `import "form-schema-runtime/styles.css"`
-- TypeScript declarations
-- IIFE bundle availability
-- npm provenance when available
+Future versions should be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow now checks npm before publishing and fails early if the package version already exists.
 
 ## Release Philosophy
 
@@ -56,7 +55,7 @@ Expected PR labels:
 
 ## One-Time npm Setup
 
-Before the first public publish:
+The first manual publication is complete. Keep this setup accurate for future automated releases:
 
 1. Create or log in to the npm account that will own the package.
 2. Enable 2FA as appropriate for the account and organization.
@@ -74,7 +73,7 @@ All npm Trusted Publisher fields are case-sensitive. The package `repository.url
 ```json
 "repository": {
   "type": "git",
-  "url": "https://github.com/DanieleMasone/form-schema-runtime.git"
+  "url": "git+https://github.com/DanieleMasone/form-schema-runtime.git"
 }
 ```
 
@@ -116,12 +115,12 @@ package.json version: 0.1.0
 GitHub Release tag: v0.1.0
 ```
 
-The release workflow rejects tags that do not match `v<semver>` or do not match the package version.
+The release workflow rejects tags that do not match `v<semver>` or do not match the package version. It also queries npm and rejects versions that are already published.
 
 Examples:
 
 - `package.json` version `0.1.0` requires GitHub tag `v0.1.0`.
-- `package.json` version `1.0.0-rc.1` requires GitHub tag `v1.0.0-rc.1`.
+- `package.json` version `0.1.1` requires GitHub tag `v0.1.1`.
 
 ## Preparing a Release
 
@@ -140,6 +139,7 @@ npm run build
 npm run test:consumer
 npm run test:e2e
 npm run verify:release -- --pack
+npm run verify:release -- --check-published
 npm pack --dry-run
 ```
 
@@ -151,7 +151,7 @@ npm pack --dry-run
 
 1. Open GitHub Releases.
 2. Draft a new release.
-3. Create or select tag `v<package-version>`, for example `v0.1.0`.
+3. Create or select tag `v<package-version>`, for example `v0.1.1`.
 4. Set the release title to the tag or a concise release title.
 5. Use GitHub's generated release notes.
 6. Review the generated notes.
@@ -176,7 +176,8 @@ The workflow:
 11. verifies ESM import, CSS export, TypeScript declarations, and IIFE availability
 12. verifies package contents with `npm pack --dry-run --json`
 13. runs `npm pack --dry-run`
-14. publishes to npm with Trusted Publishing/OIDC
+14. checks that the package version is not already published on npm
+15. publishes to npm with Trusted Publishing/OIDC
 
 ## Package Contents
 
@@ -224,6 +225,8 @@ FormSchemaRuntime
 ## If Publishing Fails
 
 - If the workflow fails before `npm publish`, fix the issue and create a new GitHub Release/tag when the tag should represent a new attempt.
+- If the workflow fails because the version is already published, bump `package.json` to a new version and create a new matching GitHub Release tag.
+- Do not rerun the same release expecting npm to overwrite an existing version.
 - If npm authentication fails, verify the npm Trusted Publisher package name, owner/repository, workflow filename, allowed action, and optional environment.
 - If publish succeeds with a bad package, deprecate the bad version and publish a corrected patch version.
 - Do not overwrite or reuse published npm versions. npm versions are immutable after publication.

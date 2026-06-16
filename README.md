@@ -113,7 +113,7 @@ npm run test:e2e
 
 Releases are GitHub Release driven. Publishing to npm is handled by a dedicated release workflow using npm Trusted Publishing/OIDC, with no long-lived npm publish token in GitHub secrets.
 
-The first public npm publication should be `v0.1.0`, or `v1.0.0-rc.1` only if the repository owner explicitly wants a v1 release-candidate track. Do not publish `v1.0.0` directly until the package has been installed and verified from npm.
+`v0.1.0` was the first public npm release. Future releases should use GitHub Releases and npm Trusted Publishing/OIDC. npm versions cannot be overwritten, so each release needs a new `package.json` version and matching tag.
 
 See [docs/release-process.md](docs/release-process.md) for setup, tag conventions, verification, publishing, provenance, and failure handling.
 

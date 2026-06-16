@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
+import { get } from "node:https";
 import { fileURLToPath } from "node:url";
 
 const PACKAGE_NAME = "form-schema-runtime";
@@ -42,6 +43,7 @@ const args = process.argv.slice(2);
 const tagArgIndex = args.indexOf("--tag");
 const releaseTag = tagArgIndex >= 0 ? args[tagArgIndex + 1] : undefined;
 const shouldVerifyPack = args.includes("--pack");
+const shouldCheckPublished = args.includes("--check-published");
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 
@@ -64,7 +66,7 @@ function validatePackageMetadata() {
   assert(packageJson.author, "package.json must include an author.");
   assert(packageJson.repository?.type === "git", "package.json must include repository.type = git.");
   assert(
-    packageJson.repository?.url === "https://github.com/DanieleMasone/form-schema-runtime.git",
+    packageJson.repository?.url === "git+https://github.com/DanieleMasone/form-schema-runtime.git",
     "package.json repository.url must exactly match the GitHub repository configured for npm Trusted Publishing."
   );
   assert(packageJson.homepage === "https://danielemasone.github.io/form-schema-runtime/", "package.json homepage is missing or incorrect.");
@@ -86,6 +88,68 @@ function validatePackageMetadata() {
   assert(packageJson.jsdelivr === "./dist/form-schema-runtime.iife.js", "jsDelivr IIFE path is incorrect.");
   assert(packageJson.publishConfig?.access === "public", "publishConfig.access must be public.");
   assert(packageJson.private !== true, "Package must not be private.");
+}
+
+function fetchNpmPackageMetadata(packageName) {
+  const registryUrl = `https://registry.npmjs.org/${encodeURIComponent(packageName)}`;
+
+  return new Promise((resolve, reject) => {
+    const request = get(
+      registryUrl,
+      {
+        headers: {
+          accept: "application/vnd.npm.install-v1+json, application/json",
+          "user-agent": `${PACKAGE_NAME}-release-verifier`
+        }
+      },
+      (response) => {
+        let body = "";
+
+        response.setEncoding("utf8");
+        response.on("data", (chunk) => {
+          body += chunk;
+        });
+        response.on("end", () => {
+          if (response.statusCode === 404) {
+            resolve(null);
+            return;
+          }
+
+          if (response.statusCode !== 200) {
+            reject(new Error(`npm registry returned HTTP ${response.statusCode} for ${packageName}.`));
+            return;
+          }
+
+          try {
+            resolve(JSON.parse(body));
+          } catch (error) {
+            reject(new Error(`npm registry returned invalid JSON for ${packageName}.`, { cause: error }));
+          }
+        });
+      }
+    );
+
+    request.on("error", (error) => {
+      reject(new Error(`Unable to query npm registry for ${packageName}.`, { cause: error }));
+    });
+    request.setTimeout(30000, () => {
+      request.destroy(new Error(`Timed out querying npm registry for ${packageName}.`));
+    });
+  });
+}
+
+async function validatePublishedVersionAvailability() {
+  const metadata = await fetchNpmPackageMetadata(packageJson.name);
+
+  if (!metadata) {
+    return;
+  }
+
+  if (metadata.versions?.[packageJson.version]) {
+    fail(`${packageJson.name}@${packageJson.version} is already published on npm.
+Bump package.json version and create a new matching GitHub Release tag.
+npm package versions are immutable and cannot be overwritten.`);
+  }
 }
 
 function assertBuiltFile(relativePath, label) {
@@ -158,6 +222,10 @@ validateReleaseTag();
 if (shouldVerifyPack) {
   validateBuiltOutput();
   validatePackContents();
+}
+
+if (shouldCheckPublished) {
+  await validatePublishedVersionAvailability();
 }
 
 if (process.exitCode) {

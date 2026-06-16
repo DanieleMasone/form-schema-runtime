@@ -61,8 +61,11 @@
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
 - Release tags must exactly match `package.json` versions, for example `0.1.0` requires `v0.1.0`.
-- The first public npm publish should be `v0.1.0`, or `v1.0.0-rc.1` only when the repository owner explicitly chooses a v1 release-candidate track.
-- Do not publish `v1.0.0` until npm installation, ESM import, CSS import, TypeScript declarations, IIFE availability, and provenance have been verified from the public package.
+- Never try to republish an existing npm version; npm package versions are immutable.
+- Check npm version existence before publishing.
+- Bump `package.json` before creating a new release, and make the GitHub Release tag match that version.
+- Do not unpublish a package version unless explicitly requested.
+- Do not force-push release tags.
 - Do not add generated npm package tarballs, generated build output, generated coverage, generated TypeDoc output, or Playwright reports to commits.
 - Do not commit temporary package consumer projects.
 - Avoid dependency bloat; do not keep direct dependencies, scripts, or generated artifacts that are only transitive toolchain details.
