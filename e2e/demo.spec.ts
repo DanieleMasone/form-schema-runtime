@@ -1,4 +1,19 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+
+function collectConsoleErrors(page: Page): string[] {
+  const errors: string[] = [];
+
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      errors.push(message.text());
+    }
+  });
+  page.on("pageerror", (error) => {
+    errors.push(error.message);
+  });
+
+  return errors;
+}
 
 test("demo loads and switches schemas", async ({ page }) => {
   await page.goto("/");
@@ -29,6 +44,7 @@ test("documentation links are visible and published in the Pages artifact", asyn
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Documentation" })).toBeVisible();
+  const documentationLinks = page.getByLabel("Documentation links");
 
   const docs = [
     ["Usage Guide", /docs\/usage-guide\.md$/],
@@ -45,31 +61,23 @@ test("documentation links are visible and published in the Pages artifact", asyn
   ] as const;
 
   for (const [name, href] of docs) {
-    await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+    await expect(documentationLinks.getByRole("link", { name, exact: true })).toBeVisible();
+    await expect(documentationLinks.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 
   await expect(page.getByRole("heading", { name: "Framework examples" })).toBeVisible();
+  const frameworkExampleLinks = page.getByLabel("Framework example links");
 
   const frameworkExamples = [
-    [
-      "React Vite Example",
-      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/react-vite$/
-    ],
-    [
-      "Vue Vite Example",
-      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/vue-vite$/
-    ],
-    [
-      "Angular Example",
-      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/angular$/
-    ],
-    ["Integration docs", /docs\/integration-guide\.md$/]
+    ["React example", /examples\/react\/$/],
+    ["Vue example", /examples\/vue\/$/],
+    ["Angular example", /examples\/angular\/$/],
+    ["Integration Guide", /docs\/integration-guide\.md$/]
   ] as const;
 
   for (const [name, href] of frameworkExamples) {
-    await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
-    await expect(page.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+    await expect(frameworkExampleLinks.getByRole("link", { name, exact: true })).toBeVisible();
+    await expect(frameworkExampleLinks.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 
   await page.goto("docs/usage-guide.md");
@@ -95,6 +103,47 @@ test("documentation links are visible and published in the Pages artifact", asyn
 
   await page.goto("docs/release-process.md");
   await expect(page.getByText("# Release Process")).toBeVisible();
+});
+
+test("framework examples load from Pages routes and submit values", async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+
+  await page.goto("examples/react/");
+  await expect(page.getByRole("heading", { name: "Form Schema Runtime in React" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "React lead capture" })).toBeVisible();
+  await page.getByRole("button", { name: "Send lead" }).click();
+  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
+  await page.getByLabel("Full name *").fill("Ada Lovelace");
+  await page.getByLabel("Work email *").fill("ada@example.com");
+  await page.getByLabel("Plan *").selectOption("starter");
+  await page.getByRole("button", { name: "Send lead" }).click();
+  await expect(page.getByText('"fullName": "Ada Lovelace"')).toBeVisible();
+
+  await page.goto("examples/vue/");
+  await expect(page.getByRole("heading", { name: "Form Schema Runtime in Vue" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Vue support request" })).toBeVisible();
+  await page.getByRole("button", { name: "Send request" }).click();
+  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
+  await page.getByLabel("Full name *").fill("Grace Hopper");
+  await page.getByLabel("Email *").fill("grace@example.com");
+  await page.getByLabel("Priority *").selectOption("normal");
+  await page.getByLabel("Message *").fill("Please review the support request.");
+  await page.getByRole("button", { name: "Send request" }).click();
+  await expect(page.getByText('"fullName": "Grace Hopper"')).toBeVisible();
+
+  await page.goto("examples/angular/");
+  await expect(page.getByRole("heading", { name: "Form Schema Runtime in Angular" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Angular access request" })).toBeVisible();
+  await page.getByRole("button", { name: "Request access" }).click();
+  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
+  await page.goto("examples/angular/");
+  await page.getByLabel("Full name *").fill("Katherine Johnson");
+  await page.getByLabel("Work email *").fill("katherine@example.com");
+  await page.getByRole("radio", { name: "Read" }).check();
+  await page.getByRole("button", { name: "Request access" }).click();
+  await expect(page.getByText('"fullName": "Katherine Johnson"')).toBeVisible();
+
+  expect(consoleErrors).toEqual([]);
 });
 
 test("payment form validates custom money and invoice fields", async ({ page }) => {

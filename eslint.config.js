@@ -4,7 +4,16 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["dist", "dist-demo", "coverage", "playwright-report", "test-results"]
+    ignores: [
+      "dist",
+      "dist-demo",
+      "coverage",
+      "playwright-report",
+      "test-results",
+      "examples/**/.angular",
+      "examples/**/dist",
+      "examples/**/node_modules"
+    ]
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

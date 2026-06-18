@@ -52,6 +52,7 @@
 - Framework examples must not become adapters or new framework-specific packages.
 - Framework examples must not be included in npm package contents.
 - Framework examples must not add React, Vue, Angular, Svelte, or other framework dependencies to the core runtime package.
+- Use `npm run build:examples` to build framework examples into `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/` for Pages; never commit those generated outputs.
 - Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
 - Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.
@@ -62,7 +63,7 @@
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
-- Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, and `/coverage/` Vitest coverage.
+- Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
 - Release tags must exactly match `package.json` versions, for example `0.1.0` requires `v0.1.0`.

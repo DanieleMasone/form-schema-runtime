@@ -31,6 +31,7 @@ pnpm-debug.log*
 
 # Runtime caches and temporary files
 .cache/
+.angular/
 .parcel-cache/
 .vite/
 .vitest/

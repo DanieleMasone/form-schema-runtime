@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "preview": "ng serve --configuration production"
   },
   "dependencies": {
     "@angular/common": "^21.2.16",
     "@angular/compiler": "^21.2.16",
     "@angular/core": "^21.2.16",
     "@angular/platform-browser": "^21.2.16",
-    "form-schema-runtime": "^0.1.0",
+    "form-schema-runtime": "^0.1.1",
     "rxjs": "^7.8.2",
     "zone.js": "^0.16.2"
   },

@@ -117,4 +117,4 @@ This checklist tracks public runtime capabilities against implementation, docume
 | package contents verification | yes | Release Process | no | release script | release |
 | Trusted Publishing/OIDC release workflow | yes | Release Process | no | workflow audit | no |
 | GitHub Pages artifact docs structure | yes | Release Process | yes | build check | yes |
-| framework consumer examples excluded from npm package | yes | Integration Guide, examples README | links | `test:examples`, release script | yes |
+| framework consumer examples excluded from npm package | yes | Integration Guide, examples README | live Pages routes | `build:examples`, `test:examples`, release script | yes |

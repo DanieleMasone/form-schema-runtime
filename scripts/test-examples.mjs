@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 const examplesRoot = path.join(repositoryRoot, "examples");
+const pagesExamplesRoot = path.join(repositoryRoot, "dist-demo", "examples");
+const shouldVerifyPages = process.argv.includes("--pages");
 const ignoredDirectoryNames = new Set([".angular", ".vite", "dist", "node_modules"]);
 const localSourcePatterns = [
   /from\s+["'](?:\.\.\/)+src(?:\/index)?["']/,
@@ -15,6 +17,8 @@ const localSourcePatterns = [
 const examples = [
   {
     directory: "react-vite",
+    pagesRoute: "react",
+    pagesBase: "/form-schema-runtime/examples/react/",
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.tsx", "src/main.tsx"],
     requiredDependencies: ["form-schema-runtime", "react", "react-dom"],
     requiredDevDependencies: ["@vitejs/plugin-react", "typescript", "vite"],
@@ -22,6 +26,8 @@ const examples = [
   },
   {
     directory: "vue-vite",
+    pagesRoute: "vue",
+    pagesBase: "/form-schema-runtime/examples/vue/",
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.vue", "src/main.ts"],
     requiredDependencies: ["form-schema-runtime", "vue"],
     requiredDevDependencies: ["@vitejs/plugin-vue", "typescript", "vite", "vue-tsc"],
@@ -29,6 +35,8 @@ const examples = [
   },
   {
     directory: "angular",
+    pagesRoute: "angular",
+    pagesBase: "/form-schema-runtime/examples/angular/",
     requiredFiles: [
       "angular.json",
       "package.json",
@@ -41,7 +49,7 @@ const examples = [
       "tsconfig.json"
     ],
     requiredDependencies: ["@angular/core", "@angular/platform-browser", "form-schema-runtime", "rxjs", "zone.js"],
-    requiredDevDependencies: ["@angular/build", "@angular/cli", "typescript"],
+    requiredDevDependencies: ["@angular/build", "@angular/cli", "@angular/compiler-cli", "typescript"],
     requiredPatterns: [/ViewChild/, /ElementRef/, /AfterViewInit/, /OnDestroy/, /createForm/, /form\?\.destroy\(\)/]
   }
 ];
@@ -97,6 +105,12 @@ function assertDependencySet(packageJson, names, dependencyKind, exampleDirector
 assert(existsSync(examplesRoot), "examples/ directory is missing.");
 assert(existsSync(path.join(examplesRoot, "README.md")), "examples/README.md is missing.");
 
+const rootPackageJson = readJson(path.join(repositoryRoot, "package.json"));
+assert(
+  !rootPackageJson.files?.some((file) => file === "examples" || file.startsWith("examples/")),
+  "Root package.json files must not include examples/."
+);
+
 examples.forEach((example) => {
   const exampleRoot = path.join(examplesRoot, example.directory);
   const manifestPath = path.join(exampleRoot, "package.json");
@@ -137,8 +151,30 @@ examples.forEach((example) => {
   });
 });
 
+if (shouldVerifyPages) {
+  assert(
+    existsSync(path.join(repositoryRoot, "dist-demo", "index.html")),
+    "dist-demo is missing. Run npm run build and npm run build:examples before npm run test:examples."
+  );
+
+  examples.forEach((example) => {
+    const pageIndexPath = path.join(pagesExamplesRoot, example.pagesRoute, "index.html");
+
+    assert(existsSync(pageIndexPath), `Pages output is missing ${example.pagesRoute}/index.html.`);
+
+    if (existsSync(pageIndexPath)) {
+      const indexHtml = readFileSync(pageIndexPath, "utf8");
+
+      assert(
+        indexHtml.includes(example.pagesBase),
+        `${example.directory} Pages output must use base path ${example.pagesBase}.`
+      );
+    }
+  });
+}
+
 if (process.exitCode) {
   process.exit();
 }
 
-console.log("Example structure verification passed.");
+console.log(shouldVerifyPages ? "Example source and Pages output verification passed." : "Example structure verification passed.");

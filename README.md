@@ -13,6 +13,7 @@ It targets enterprise and legacy-friendly frontend surfaces where React, Angular
 - Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
 - API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
 - Coverage report: [danielemasone.github.io/form-schema-runtime/coverage/](https://danielemasone.github.io/form-schema-runtime/coverage/)
+- Framework examples: [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/)
 
 ## Installation
 
@@ -107,6 +108,7 @@ npm run lint
 npm test
 npm run test:coverage
 npm run build
+npm run build:examples
 npm run test:consumer
 npm run test:examples
 npm run test:e2e
@@ -114,7 +116,7 @@ npm run test:e2e
 
 `npm run build` produces the library package, the GitHub Pages demo, TypeDoc API docs, copied Markdown docs, and the coverage page when coverage has been generated.
 
-Framework example builds are intentionally checked manually from each `examples/*` consumer app so the core CI does not install React, Vue, or Angular dependencies on every push.
+`npm run build:examples` builds the React, Vue, and Angular consumer apps and copies them into the Pages artifact under `/examples/react/`, `/examples/vue/`, and `/examples/angular/`.
 
 ## Release
 

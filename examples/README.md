@@ -17,17 +17,25 @@ The framework owns the host container and page lifecycle. `form-schema-runtime` 
 - [Vue Vite](vue-vite/): mounts the runtime with `ref`, `onMounted`, and `onUnmounted`.
 - [Angular](angular/): mounts the runtime from a standalone component with `ViewChild`, `AfterViewInit`, and `OnDestroy`.
 
-## Verify Example Structure
+## Published Pages Routes
+
+- [React example](https://danielemasone.github.io/form-schema-runtime/examples/react/)
+- [Vue example](https://danielemasone.github.io/form-schema-runtime/examples/vue/)
+- [Angular example](https://danielemasone.github.io/form-schema-runtime/examples/angular/)
+
+The Pages routes are built from the consumer apps and copied into `dist-demo/examples/`. Generated output stays out of git.
+
+## Build For Pages
 
 From the repository root:
 
 ```bash
+npm run build
+npm run build:examples
 npm run test:examples
 ```
 
-This checks that each example has a valid package manifest, uses the published npm package import, imports the runtime CSS, and avoids local source imports.
-
-It does not install or build React, Vue, and Angular on every root verification run. Build the individual consumer apps when changing their source or dependency ranges.
+`build:examples` installs each example with `npm install --package-lock=false`, builds it with the correct GitHub Pages base path, and copies the static output to `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/`. `test:examples` checks package imports, lifecycle patterns, package exclusion, and the built Pages output.
 
 ## Run An Example
 
@@ -37,6 +45,7 @@ Run commands inside one example directory:
 npm install
 npm run build
 npm run dev
+npm run preview
 ```
 
 Use the package manager lockfile policy of the consuming application. This repository does not commit example `node_modules`, generated build output, or package tarballs.

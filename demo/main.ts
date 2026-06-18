@@ -78,10 +78,10 @@ function createFrameworkExamplesPanel(): HTMLElement {
   const links = el("nav", { className: "demo-doc-links", attributes: { "aria-label": "Framework example links" } });
 
   [
-    ["React Vite Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/react-vite"],
-    ["Vue Vite Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/vue-vite"],
-    ["Angular Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/angular"],
-    ["Integration docs", "docs/integration-guide.md"]
+    ["React example", "examples/react/"],
+    ["Vue example", "examples/vue/"],
+    ["Angular example", "examples/angular/"],
+    ["Integration Guide", "docs/integration-guide.md"]
   ].forEach(([label, href]) => {
     links.append(externalLink(label, href));
   });

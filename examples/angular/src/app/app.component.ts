@@ -1,4 +1,12 @@
-import { Component, ViewChild, type AfterViewInit, type ElementRef, type OnDestroy } from "@angular/core";
+import {
+  ChangeDetectorRef,
+  Component,
+  ViewChild,
+  inject,
+  type AfterViewInit,
+  type ElementRef,
+  type OnDestroy
+} from "@angular/core";
 import { createForm, type FormInstance, type FormSchema } from "form-schema-runtime";
 
 @Component({
@@ -30,6 +38,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
   protected submitResultText = "Submit a valid form.";
   private form: FormInstance | null = null;
+  private readonly changeDetector = inject(ChangeDetectorRef);
 
   private readonly schema: FormSchema = {
     id: "angular-access-request",
@@ -75,13 +84,13 @@ export class AppComponent implements AfterViewInit, OnDestroy {
       container: this.formHost.nativeElement,
       schema: this.schema,
       onSubmit: (values) => {
-        this.submitResultText = JSON.stringify(values, null, 2);
+        this.updateSubmitResult(JSON.stringify(values, null, 2));
       },
       onValidationError: () => {
-        this.submitResultText = "Submit a valid form.";
+        this.updateSubmitResult("Submit a valid form.");
       },
       onReset: () => {
-        this.submitResultText = "Submit a valid form.";
+        this.updateSubmitResult("Submit a valid form.");
       }
     });
   }
@@ -89,5 +98,10 @@ export class AppComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.form?.destroy();
     this.form = null;
+  }
+
+  private updateSubmitResult(value: string): void {
+    this.submitResultText = value;
+    this.changeDetector.detectChanges();
   }
 }

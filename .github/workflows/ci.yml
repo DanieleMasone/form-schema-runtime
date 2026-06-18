@@ -46,10 +46,13 @@ jobs:
       - name: Build library, demo, API docs, and coverage page
         run: npm run build
 
+      - name: Build framework examples for Pages
+        run: npm run build:examples
+
       - name: Consumer smoke test
         run: npm run test:consumer
 
-      - name: Example structure check
+      - name: Example Pages check
         run: npm run test:examples
 
       - name: Install Playwright browsers
