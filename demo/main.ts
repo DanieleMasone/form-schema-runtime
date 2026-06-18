@@ -73,6 +73,30 @@ function createDocumentationPanel(): HTMLElement {
   return panel;
 }
 
+function createFrameworkExamplesPanel(): HTMLElement {
+  const { panel, body } = createPanel("Framework examples");
+  const links = el("nav", { className: "demo-doc-links", attributes: { "aria-label": "Framework example links" } });
+
+  [
+    ["React Vite Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/react-vite"],
+    ["Vue Vite Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/vue-vite"],
+    ["Angular Example", "https://github.com/DanieleMasone/form-schema-runtime/tree/main/examples/angular"],
+    ["Integration docs", "docs/integration-guide.md"]
+  ].forEach(([label, href]) => {
+    links.append(externalLink(label, href));
+  });
+
+  body.append(
+    el("p", {
+      className: "demo-example-summary",
+      text: "Consumer apps show the same runtime mounted from React, Vue, and Angular without adding framework adapters."
+    }),
+    links
+  );
+
+  return panel;
+}
+
 function createHero(): HTMLElement {
   const hero = el("section", { className: "demo-hero" });
   const copy = el("div", { className: "demo-hero-copy" });
@@ -133,6 +157,7 @@ const rightColumn = el("div", { className: "demo-stack" });
 const formPanel = createPanel("Rendered form", "demo-form-panel");
 const explainPanel = createPanel("What this demonstrates");
 const documentationPanel = createDocumentationPanel();
+const frameworkExamplesPanel = createFrameworkExamplesPanel();
 const schemaPanel = createCodePanel("Active schema");
 const valuesPanel = createCodePanel("Current values");
 const statePanel = createCodePanel("Form state");
@@ -149,7 +174,7 @@ examples.forEach((example) => {
 darkToggleLabel.append(darkToggle, document.createTextNode("Dark mode"));
 schemaControl.append(schemaLabel, schemaSelect);
 toolbar.append(schemaControl, darkToggleLabel, statusText);
-leftColumn.append(documentationPanel, explainPanel.panel, formPanel.panel);
+leftColumn.append(documentationPanel, frameworkExamplesPanel, explainPanel.panel, formPanel.panel);
 rightColumn.append(schemaPanel.panel, valuesPanel.panel, statePanel.panel, errorsPanel.panel, submitPanel.panel);
 content.append(leftColumn, rightColumn);
 shell.append(hero, toolbar, content);

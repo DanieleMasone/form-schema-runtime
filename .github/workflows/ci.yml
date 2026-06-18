@@ -49,6 +49,9 @@ jobs:
       - name: Consumer smoke test
         run: npm run test:consumer
 
+      - name: Example structure check
+        run: npm run test:examples
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

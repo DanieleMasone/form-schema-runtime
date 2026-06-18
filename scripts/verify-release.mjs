@@ -32,6 +32,7 @@ const FORBIDDEN_PACKAGE_PATHS = [
   "dist-demo/",
   "docs/",
   "e2e/",
+  "examples/",
   "playwright-report/",
   "src/",
   "test-results/",

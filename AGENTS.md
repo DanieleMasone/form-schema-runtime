@@ -47,6 +47,11 @@
 ## CI and Build Expectations
 
 - Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, build, Playwright, and Pages deployment.
+- Framework examples are allowed only under `examples/`; they must remain consumer apps rather than core runtime code.
+- Framework examples must use published package imports such as `form-schema-runtime` and `form-schema-runtime/styles.css`, not local `src` imports.
+- Framework examples must not become adapters or new framework-specific packages.
+- Framework examples must not be included in npm package contents.
+- Framework examples must not add React, Vue, Angular, Svelte, or other framework dependencies to the core runtime package.
 - Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
 - Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.

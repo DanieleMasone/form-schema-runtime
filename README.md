@@ -70,6 +70,10 @@ Use the returned instance for `getValues`, `setValues`, `validate`, `reset`, and
 - [Accessibility Guide](docs/accessibility-guide.md)
 - [Integration Guide](docs/integration-guide.md)
 - [Real-World Examples](docs/real-world-examples.md)
+- [Framework Consumer Examples](examples/README.md)
+- [React Vite Example](examples/react-vite/)
+- [Vue Vite Example](examples/vue-vite/)
+- [Angular Example](examples/angular/)
 - [Release Process](docs/release-process.md)
 - [Generated API Docs](https://danielemasone.github.io/form-schema-runtime/api/)
 - [Feature Matrix](docs/feature-matrix.md)
@@ -104,10 +108,13 @@ npm test
 npm run test:coverage
 npm run build
 npm run test:consumer
+npm run test:examples
 npm run test:e2e
 ```
 
 `npm run build` produces the library package, the GitHub Pages demo, TypeDoc API docs, copied Markdown docs, and the coverage page when coverage has been generated.
+
+Framework example builds are intentionally checked manually from each `examples/*` consumer app so the core CI does not install React, Vue, or Angular dependencies on every push.
 
 ## Release
 

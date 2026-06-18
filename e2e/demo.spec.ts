@@ -45,8 +45,31 @@ test("documentation links are visible and published in the Pages artifact", asyn
   ] as const;
 
   for (const [name, href] of docs) {
-    await expect(page.getByRole("link", { name })).toBeVisible();
-    await expect(page.getByRole("link", { name })).toHaveAttribute("href", href);
+    await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
+  }
+
+  await expect(page.getByRole("heading", { name: "Framework examples" })).toBeVisible();
+
+  const frameworkExamples = [
+    [
+      "React Vite Example",
+      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/react-vite$/
+    ],
+    [
+      "Vue Vite Example",
+      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/vue-vite$/
+    ],
+    [
+      "Angular Example",
+      /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime\/tree\/main\/examples\/angular$/
+    ],
+    ["Integration docs", /docs\/integration-guide\.md$/]
+  ] as const;
+
+  for (const [name, href] of frameworkExamples) {
+    await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 
   await page.goto("docs/usage-guide.md");

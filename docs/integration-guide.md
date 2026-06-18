@@ -132,6 +132,16 @@ function unmount() {
 
 Keep framework-specific lifecycle code in the host application. Do not move framework dependencies into the runtime package.
 
+## Runnable Framework Examples
+
+The repository includes small consumer applications that install `form-schema-runtime` from npm and demonstrate framework lifecycle integration without adding adapters:
+
+- [React Vite example](../examples/react-vite/)
+- [Vue Vite example](../examples/vue-vite/)
+- [Angular example](../examples/angular/)
+
+These examples are intentionally outside the published npm package. They show the framework-owned container pattern, submit handling, validation, and `form.destroy()` cleanup.
+
 ## React Integration
 
 React applications can mount the DOM runtime inside a ref-owned container. Keep schema and callback identity stable with `useMemo` and `useCallback` in the host app when possible, because changing those references intentionally recreates the form.
@@ -302,6 +312,21 @@ Guidance:
 - Keep runtime-owned DOM out of Vue templates.
 - Prefer replacing the schema object when the form definition changes.
 - Use Vue for surrounding page state, routing, and API calls.
+
+## Avoiding Double Rendering
+
+The framework should render the page shell, route state, panels, and submit result UI. `form-schema-runtime` should render only the form controls inside the container passed to `createForm`.
+
+Avoid:
+
+- mapping every schema field to framework components and also calling `createForm`
+- putting framework children inside the runtime-owned container
+- mutating runtime-created form controls from framework templates
+- leaving an old instance alive before remounting a new schema
+
+## When Native Framework Forms Are Better
+
+Use the framework's native form tools instead when the form is deeply tied to framework component composition, async validators, field arrays, drag-and-drop builders, or framework-specific validation libraries. `form-schema-runtime` is a better fit when the schema is data-driven, synchronous, native-control based, and needs to work consistently across framework and non-framework surfaces.
 
 ## ESM Usage
 
