@@ -2,24 +2,25 @@
 
 This project publishes npm packages from GitHub Releases. Publishing is intentional only when a GitHub Release is published for a tag that exactly matches `package.json`.
 
-## Published Versions And Next Release
+## Published Versions And Stable Release
 
 The published npm history is:
 
 - npm package: `form-schema-runtime`
 - `0.1.0` was published manually.
 - `0.1.1` was published through the GitHub Release workflow with npm Trusted Publishing/OIDC.
+- `1.0.0` is the first stable release being prepared.
 
 npm package versions are immutable. Re-running an existing release workflow cannot overwrite an already published version such as `form-schema-runtime@0.1.0` or `form-schema-runtime@0.1.1`; npm will reject the publish with an error that the version was previously published.
 
 Do not rerun an existing release expecting npm to overwrite the package. Do not unpublish published versions, delete GitHub Releases, force-push tags, or create replacement tags unless explicitly requested by the repository owner.
 
-The next automated release must use a new package version and matching tag, for example:
+The stable release must use the package version and matching GitHub Release tag:
 
-- package version: `0.1.2`
-- GitHub Release tag: `v0.1.2`
+- package version: `1.0.0`
+- GitHub Release tag: `v1.0.0`
 
-Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
+Future versions must also keep `package.json` and the GitHub Release tag aligned, for example package version `1.0.1` with tag `v1.0.1`. Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
 
 ## Release Philosophy
 
@@ -111,16 +112,16 @@ It does not pass `--provenance` because npm Trusted Publishing from GitHub Actio
 Use semantic versions in `package.json` and matching Git tags:
 
 ```txt
-package.json version: 0.1.0
-GitHub Release tag: v0.1.0
+package.json version: 1.0.0
+GitHub Release tag: v1.0.0
 ```
 
 The release workflow rejects tags that do not match `v<semver>` or do not match the package version. It also queries npm and rejects versions that are already published.
 
 Examples:
 
-- `package.json` version `0.1.0` requires GitHub tag `v0.1.0`.
-- `package.json` version `0.1.1` requires GitHub tag `v0.1.1`.
+- `package.json` version `1.0.0` requires GitHub tag `v1.0.0`.
+- `package.json` version `1.0.1` requires GitHub tag `v1.0.1`.
 
 ## Preparing a Release
 
@@ -153,7 +154,7 @@ npm pack --dry-run
 
 1. Open GitHub Releases.
 2. Draft a new release.
-3. Create or select tag `v<package-version>`, for example `v0.1.1`.
+3. Create or select tag `v<package-version>`, for example `v1.0.0`.
 4. Set the release title to the tag or a concise release title.
 5. Use GitHub's generated release notes.
 6. Review the generated notes.
