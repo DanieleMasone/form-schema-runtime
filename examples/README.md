@@ -9,6 +9,12 @@ import { createForm, type FormSchema } from "form-schema-runtime";
 import "form-schema-runtime/styles.css";
 ```
 
+For a consumer application, install the runtime from npm:
+
+```bash
+npm install form-schema-runtime
+```
+
 The framework owns the host container and page lifecycle. `form-schema-runtime` owns only the DOM inside the container passed to `createForm`.
 
 ## Examples

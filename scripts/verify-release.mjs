@@ -177,7 +177,7 @@ function validateReleaseTag() {
   }
 
   const tagPattern = /^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
-  assert(tagPattern.test(releaseTag), `Release tag "${releaseTag}" must use v<semver>, for example v0.1.0.`);
+  assert(tagPattern.test(releaseTag), `Release tag "${releaseTag}" must use v<semver>, for example v1.0.0.`);
 
   const versionFromTag = releaseTag.slice(1);
   assert(

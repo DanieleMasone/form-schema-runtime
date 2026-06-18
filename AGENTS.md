@@ -66,7 +66,7 @@
 - Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
-- Release tags must exactly match `package.json` versions, for example `0.1.0` requires `v0.1.0`.
+- Release tags must exactly match `package.json` versions, for example `1.0.0` requires `v1.0.0`.
 - Never try to republish an existing npm version; npm package versions are immutable.
 - Check npm version existence before publishing.
 - Bump `package.json` before creating a new release, and make the GitHub Release tag match that version.

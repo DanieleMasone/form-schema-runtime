@@ -4,6 +4,12 @@ This is a small Angular standalone consumer app for the published `form-schema-r
 
 It uses Angular 21 so it works with the current Node 20, 22, and 24 ranges supported by Angular without requiring the newer Angular 22 Node floor.
 
+For your own Angular app, install the runtime from npm:
+
+```bash
+npm install form-schema-runtime
+```
+
 ```bash
 npm install
 npm run dev

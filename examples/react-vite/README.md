@@ -2,6 +2,12 @@
 
 This is a small React consumer app for the published `form-schema-runtime` package.
 
+For your own React app, install the runtime from npm:
+
+```bash
+npm install form-schema-runtime
+```
+
 ```bash
 npm install
 npm run dev
