@@ -4,22 +4,22 @@ This project publishes npm packages from GitHub Releases. Publishing is intentio
 
 ## Published Versions And Next Release
 
-The first public npm publication has already happened:
+The published npm history is:
 
 - npm package: `form-schema-runtime`
-- published version: `0.1.0`
-- GitHub Release: `v0.1.0`
+- `0.1.0` was published manually.
+- `0.1.1` was published through the GitHub Release workflow with npm Trusted Publishing/OIDC.
 
-npm package versions are immutable. Re-running the `v0.1.0` release workflow cannot overwrite `form-schema-runtime@0.1.0`; npm will reject the publish with an error that the version was previously published.
+npm package versions are immutable. Re-running an existing release workflow cannot overwrite an already published version such as `form-schema-runtime@0.1.0` or `form-schema-runtime@0.1.1`; npm will reject the publish with an error that the version was previously published.
 
-Do not rerun the `v0.1.0` release expecting npm to overwrite the package. Do not unpublish `0.1.0`, delete the GitHub Release, force-push the tag, or create replacement tags unless explicitly requested by the repository owner.
+Do not rerun an existing release expecting npm to overwrite the package. Do not unpublish published versions, delete GitHub Releases, force-push tags, or create replacement tags unless explicitly requested by the repository owner.
 
-The next automated release must use a new version, for example:
+The next automated release must use a new package version and matching tag, for example:
 
-- package version: `0.1.1`
-- GitHub Release tag: `v0.1.1`
+- package version: `0.1.2`
+- GitHub Release tag: `v0.1.2`
 
-Future versions should be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow now checks npm before publishing and fails early if the package version already exists.
+Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
 
 ## Release Philosophy
 
@@ -136,10 +136,12 @@ npm run lint
 npm test
 npm run test:coverage
 npm run build
+npm run build:examples
+npm run test:examples
 npm run test:consumer
 npm run test:e2e
-npm run verify:release -- --pack
-npm run verify:release -- --check-published
+npm run verify:release -- --tag v<package-version> --pack
+npm run verify:release -- --tag v<package-version> --check-published
 npm pack --dry-run
 ```
 
@@ -246,7 +248,7 @@ Never commit:
 
 ## CI vs Release
 
-CI runs on pushes and pull requests. It verifies install, typecheck, lint, unit tests, coverage, build, consumer package smoke test, Playwright, and Pages deployment on `main`.
+CI runs on pushes and pull requests. It verifies install, typecheck, lint, unit tests, coverage, build, framework example builds, framework example checks, consumer package smoke test, Playwright, and Pages deployment on `main`.
 
 Release runs only when a GitHub Release is published. It repeats the package quality checks, runs the consumer smoke test, verifies package contents, and publishes to npm.
 
