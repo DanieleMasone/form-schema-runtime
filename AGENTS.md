@@ -63,7 +63,7 @@
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
-- Pages artifact structure should remain root demo, `/docs/` Markdown docs, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
+- Pages artifact structure should remain root demo, `/docs/` generated HTML docs from Markdown sources, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
 - Release tags must exactly match `package.json` versions, for example `1.0.0` requires `v1.0.0`.

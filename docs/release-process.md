@@ -174,7 +174,7 @@ The workflow:
 6. runs lint
 7. runs unit tests
 8. generates coverage
-9. builds the package, demo, API docs, Markdown docs, and coverage page
+9. builds the package, demo, API docs, generated HTML docs from Markdown sources, and coverage page
 10. installs the packed package in a temporary consumer project
 11. verifies ESM import, CSS export, TypeScript declarations, and IIFE availability
 12. verifies package contents with `npm pack --dry-run --json`

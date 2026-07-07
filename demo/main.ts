@@ -48,14 +48,16 @@ function createDocumentationPanel(): HTMLElement {
 
   [
     ["Documentation Index", "docs/"],
-    ["Usage Guide", "docs/usage-guide.md"],
-    ["Schema Reference", "docs/schema-reference.md"],
-    ["Validation Guide", "docs/validation-guide.md"],
-    ["Customization Guide", "docs/customization-guide.md"],
-    ["Accessibility Guide", "docs/accessibility-guide.md"],
-    ["Integration Guide", "docs/integration-guide.md"],
-    ["Real-World Examples", "docs/real-world-examples.md"],
-    ["Release Process", "docs/release-process.md"],
+    ["Usage Guide", "docs/usage-guide/"],
+    ["Schema Reference", "docs/schema-reference/"],
+    ["Validation Guide", "docs/validation-guide/"],
+    ["Customization Guide", "docs/customization-guide/"],
+    ["Accessibility Guide", "docs/accessibility-guide/"],
+    ["Integration Guide", "docs/integration-guide/"],
+    ["Real-World Examples", "docs/real-world-examples/"],
+    ["Feature Matrix", "docs/feature-matrix/"],
+    ["Market Positioning", "docs/market-positioning/"],
+    ["Release Process", "docs/release-process/"],
     ["API Documentation", "api/"],
     ["Coverage Report", "coverage/"],
     ["GitHub Repository", "https://github.com/DanieleMasone/form-schema-runtime"]
@@ -82,7 +84,7 @@ function createFrameworkExamplesPanel(): HTMLElement {
     ["React example", "examples/react/"],
     ["Vue example", "examples/vue/"],
     ["Angular example", "examples/angular/"],
-    ["Integration Guide", "docs/integration-guide.md"]
+    ["Integration Guide", "docs/integration-guide/"]
   ].forEach(([label, href]) => {
     links.append(externalLink(label, href));
   });
@@ -118,14 +120,8 @@ function createHero(): HTMLElement {
     externalLink("GitHub", "https://github.com/DanieleMasone/form-schema-runtime"),
     externalLink("API docs", "api/"),
     externalLink("Coverage", "coverage/"),
-    externalLink(
-      "Custom validators",
-      "https://github.com/DanieleMasone/form-schema-runtime/blob/main/docs/examples/custom-validators.md"
-    ),
-    externalLink(
-      "Custom renderers",
-      "https://github.com/DanieleMasone/form-schema-runtime/blob/main/docs/examples/custom-renderers.md"
-    )
+    externalLink("Custom validators", "docs/examples/custom-validators/"),
+    externalLink("Custom renderers", "docs/examples/custom-renderers/")
   );
 
   [

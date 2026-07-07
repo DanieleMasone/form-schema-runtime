@@ -85,6 +85,8 @@ test("demo loads and switches schemas", async ({ page }) => {
 });
 
 test("documentation links are visible and published in the Pages artifact", async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Documentation" })).toBeVisible();
@@ -92,14 +94,16 @@ test("documentation links are visible and published in the Pages artifact", asyn
 
   const docs = [
     ["Documentation Index", /docs\/$/],
-    ["Usage Guide", /docs\/usage-guide\.md$/],
-    ["Schema Reference", /docs\/schema-reference\.md$/],
-    ["Validation Guide", /docs\/validation-guide\.md$/],
-    ["Customization Guide", /docs\/customization-guide\.md$/],
-    ["Accessibility Guide", /docs\/accessibility-guide\.md$/],
-    ["Integration Guide", /docs\/integration-guide\.md$/],
-    ["Real-World Examples", /docs\/real-world-examples\.md$/],
-    ["Release Process", /docs\/release-process\.md$/],
+    ["Usage Guide", /docs\/usage-guide\/$/],
+    ["Schema Reference", /docs\/schema-reference\/$/],
+    ["Validation Guide", /docs\/validation-guide\/$/],
+    ["Customization Guide", /docs\/customization-guide\/$/],
+    ["Accessibility Guide", /docs\/accessibility-guide\/$/],
+    ["Integration Guide", /docs\/integration-guide\/$/],
+    ["Real-World Examples", /docs\/real-world-examples\/$/],
+    ["Feature Matrix", /docs\/feature-matrix\/$/],
+    ["Market Positioning", /docs\/market-positioning\/$/],
+    ["Release Process", /docs\/release-process\/$/],
     ["API Documentation", /api\/$/],
     ["Coverage Report", /coverage\/$/],
     ["GitHub Repository", /^https:\/\/github\.com\/DanieleMasone\/form-schema-runtime$/]
@@ -117,7 +121,7 @@ test("documentation links are visible and published in the Pages artifact", asyn
     ["React example", /examples\/react\/$/],
     ["Vue example", /examples\/vue\/$/],
     ["Angular example", /examples\/angular\/$/],
-    ["Integration Guide", /docs\/integration-guide\.md$/]
+    ["Integration Guide", /docs\/integration-guide\/$/]
   ] as const;
 
   for (const [name, href] of frameworkExamples) {
@@ -126,31 +130,41 @@ test("documentation links are visible and published in the Pages artifact", asyn
   }
 
   await page.goto("docs/");
-  await expect(page.getByRole("heading", { name: "form-schema-runtime docs" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Documentation", level: 1 })).toBeVisible();
+  await expect(page.getByLabel("Documentation", { exact: true }).getByRole("link", { name: "Usage Guide" })).toHaveAttribute(
+    "href",
+    /docs\/usage-guide\/$/
+  );
 
-  await page.goto("docs/usage-guide.md");
-  await expect(page.getByText("# Usage Guide")).toBeVisible();
+  const htmlDocs = [
+    ["docs/usage-guide/", "Usage Guide"],
+    ["docs/schema-reference/", "Schema Reference"],
+    ["docs/validation-guide/", "Validation Guide"],
+    ["docs/customization-guide/", "Customization Guide"],
+    ["docs/accessibility-guide/", "Accessibility Guide"],
+    ["docs/integration-guide/", "Integration Guide"],
+    ["docs/real-world-examples/", "Real-World Examples"],
+    ["docs/feature-matrix/", "Feature Verification Matrix"],
+    ["docs/market-positioning/", "Market Positioning"],
+    ["docs/release-process/", "Release Process"]
+  ] as const;
 
-  await page.goto("docs/schema-reference.md");
-  await expect(page.getByText("# Schema Reference")).toBeVisible();
+  for (const [route, heading] of htmlDocs) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
+    await expect(page.getByLabel("Documentation").getByRole("link", { name: "Usage Guide" })).toBeVisible();
+  }
 
-  await page.goto("docs/validation-guide.md");
-  await expect(page.getByText("# Validation Guide")).toBeVisible();
+  await page.goto("docs/usage-guide/");
+  await expect(page.locator("pre code").first()).toBeVisible();
 
-  await page.goto("docs/customization-guide.md");
-  await expect(page.getByText("# Customization Guide")).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("docs/integration-guide/");
+  await expect(page.getByRole("heading", { name: "Integration Guide", level: 1 })).toBeVisible();
+  await expect(page.getByLabel("Project links").getByRole("link", { name: "Demo" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
 
-  await page.goto("docs/accessibility-guide.md");
-  await expect(page.getByText("# Accessibility Guide")).toBeVisible();
-
-  await page.goto("docs/integration-guide.md");
-  await expect(page.getByText("# Integration Guide")).toBeVisible();
-
-  await page.goto("docs/real-world-examples.md");
-  await expect(page.getByText("# Real-World Examples")).toBeVisible();
-
-  await page.goto("docs/release-process.md");
-  await expect(page.getByText("# Release Process")).toBeVisible();
+  expect(consoleErrors).toEqual([]);
 });
 
 test("framework examples load from Pages routes and exercise integration features", async ({ page }) => {

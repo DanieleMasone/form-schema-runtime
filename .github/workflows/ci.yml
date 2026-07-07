@@ -43,8 +43,11 @@ jobs:
       - name: Coverage report
         run: npm run test:coverage
 
-      - name: Build library, demo, API docs, and coverage page
+      - name: Build library, demo, HTML docs, API docs, and coverage page
         run: npm run build
+
+      - name: HTML docs check
+        run: npm run test:site-docs
 
       - name: Build framework examples for Pages
         run: npm run build:examples
