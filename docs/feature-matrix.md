@@ -37,7 +37,7 @@ This checklist tracks public runtime capabilities against implementation, docume
 | min and max | yes | Validation Guide, Real-World Examples | yes | yes | yes |
 | pattern | yes | Validation Guide, Real-World Examples | yes | yes | yes |
 | email validation | yes | Validation Guide, Real-World Examples | yes | yes | yes |
-| custom synchronous validators | yes | Validation Guide, Customization Guide, examples | yes | yes | partial |
+| custom synchronous validators | yes | Validation Guide, Customization Guide, examples | yes | yes | yes |
 | custom validation messages | yes | Validation Guide, Schema Reference | partial | yes | no |
 | hidden conditional fields skipped by validation | yes | Validation Guide, Usage Guide | yes | yes | yes |
 | field-level errors | yes | Accessibility Guide, Validation Guide | yes | yes | yes |
@@ -74,11 +74,11 @@ This checklist tracks public runtime capabilities against implementation, docume
 
 | Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
 | --- | --- | --- | --- | --- | --- |
-| CSS variables | yes | Customization Guide | yes | partial | yes |
+| CSS variables | yes | Customization Guide, examples | yes | partial | yes |
 | stable CSS classes | yes | Customization Guide | yes | yes | yes |
 | `classPrefix` | yes | Customization Guide, Integration Guide | partial | yes | no |
 | event hooks | yes | Usage Guide, API docs | yes | yes | yes |
-| custom validators | yes | Validation Guide, Customization Guide, examples | yes | yes | partial |
+| custom validators | yes | Validation Guide, Customization Guide, examples | yes | yes | yes |
 | custom field renderers | yes | Customization Guide, examples, API docs | yes | yes | yes |
 | renderer listener cleanup | yes | Customization Guide, API docs | no | yes | no |
 

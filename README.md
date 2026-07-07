@@ -116,7 +116,7 @@ npm run test:e2e
 
 `npm run build` produces the library package, the GitHub Pages demo, TypeDoc API docs, copied Markdown docs, and the coverage page when coverage has been generated.
 
-`npm run build:examples` builds the React, Vue, and Angular consumer apps and copies them into the Pages artifact under `/examples/react/`, `/examples/vue/`, and `/examples/angular/`.
+`npm run build:examples` builds the React, Vue, and Angular consumer apps and copies them into the Pages artifact under `/examples/react/`, `/examples/vue/`, and `/examples/angular/`. The examples consume the published npm package and demonstrate lifecycle cleanup, custom validators, custom renderers, and CSS variable theming without framework adapters.
 
 ## Release
 

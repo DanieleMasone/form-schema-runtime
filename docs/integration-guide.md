@@ -141,7 +141,7 @@ The repository includes small consumer applications that install `form-schema-ru
 - Live Angular example: [danielemasone.github.io/form-schema-runtime/examples/angular/](https://danielemasone.github.io/form-schema-runtime/examples/angular/)
 - Source apps: [React Vite](../examples/react-vite/), [Vue Vite](../examples/vue-vite/), [Angular](../examples/angular/)
 
-These examples are intentionally outside the published npm package. They show the framework-owned container pattern, submit handling, validation, and `form.destroy()` cleanup.
+These examples are intentionally outside the published npm package. They show the framework-owned container pattern, submit handling, state observation, required validation, conditional visibility, custom synchronous validators, custom field renderers, CSS variable theming, and `form.destroy()` cleanup.
 
 Build them for GitHub Pages from the repository root with:
 

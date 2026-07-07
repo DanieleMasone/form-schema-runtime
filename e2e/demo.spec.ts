@@ -15,6 +15,50 @@ function collectConsoleErrors(page: Page): string[] {
   return errors;
 }
 
+async function expectNoHorizontalOverflow(page: Page): Promise<void> {
+  const hasHorizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+  );
+  expect(hasHorizontalOverflow).toBe(false);
+}
+
+async function exerciseFrameworkExample(page: Page, route: string, frameworkName: string): Promise<void> {
+  await page.goto(route);
+
+  await expect(page.getByRole("heading", { name: `Form Schema Runtime in ${frameworkName}` })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Enterprise access request" })).toBeVisible();
+  await expect(page.locator(".department-picker")).toBeVisible();
+  await expect(page.getByLabel("Privileged access justification *")).toBeHidden();
+
+  await page.getByRole("button", { name: "Submit request" }).click();
+  await expect(page.getByLabel("Requester name *")).toHaveAttribute("aria-invalid", "true");
+
+  await page.getByLabel("Requester name *").fill("Ada Lovelace");
+  await page.getByLabel("Work email *").fill("ada@personal.test");
+  await page.getByLabel("Access type *").selectOption("privileged");
+  await expect(page.getByLabel("Privileged access justification *")).toBeVisible();
+
+  await page.getByLabel("Access type *").selectOption("standard");
+  await expect(page.getByLabel("Privileged access justification *")).toBeHidden();
+
+  await page.getByLabel("Access type *").selectOption("privileged");
+  await page.getByRole("radio", { name: "Operator" }).check();
+  await page.getByRole("radio", { name: "Finance" }).check();
+  await page.getByLabel("I understand privileged access requires administrator approval").check();
+  await page
+    .getByLabel("Privileged access justification *")
+    .fill("Temporary production incident review for ticket INC-1042.");
+  await page.getByRole("button", { name: "Submit request" }).click();
+  await expect(page.locator(".fsr-error", { hasText: "Use your @example.com work email." })).toBeVisible();
+
+  await page.getByLabel("Work email *").fill("ada@example.com");
+  await page.getByRole("button", { name: "Submit request" }).click();
+
+  await expect(page.getByText('"requesterName": "Ada Lovelace"')).toBeVisible();
+  await expect(page.getByText('"department": "finance"')).toBeVisible();
+  await expect(page.getByText('"visibleFields": [')).toBeVisible();
+}
+
 test("demo loads and switches schemas", async ({ page }) => {
   await page.goto("/");
 
@@ -47,6 +91,7 @@ test("documentation links are visible and published in the Pages artifact", asyn
   const documentationLinks = page.getByLabel("Documentation links");
 
   const docs = [
+    ["Documentation Index", /docs\/$/],
     ["Usage Guide", /docs\/usage-guide\.md$/],
     ["Schema Reference", /docs\/schema-reference\.md$/],
     ["Validation Guide", /docs\/validation-guide\.md$/],
@@ -80,6 +125,9 @@ test("documentation links are visible and published in the Pages artifact", asyn
     await expect(frameworkExampleLinks.getByRole("link", { name, exact: true })).toHaveAttribute("href", href);
   }
 
+  await page.goto("docs/");
+  await expect(page.getByRole("heading", { name: "form-schema-runtime docs" })).toBeVisible();
+
   await page.goto("docs/usage-guide.md");
   await expect(page.getByText("# Usage Guide")).toBeVisible();
 
@@ -105,45 +153,38 @@ test("documentation links are visible and published in the Pages artifact", asyn
   await expect(page.getByText("# Release Process")).toBeVisible();
 });
 
-test("framework examples load from Pages routes and submit values", async ({ page }) => {
+test("framework examples load from Pages routes and exercise integration features", async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
 
-  await page.goto("examples/react/");
-  await expect(page.getByRole("heading", { name: "Form Schema Runtime in React" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "React lead capture" })).toBeVisible();
-  await page.getByRole("button", { name: "Send lead" }).click();
-  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
-  await page.getByLabel("Full name *").fill("Ada Lovelace");
-  await page.getByLabel("Work email *").fill("ada@example.com");
-  await page.getByLabel("Plan *").selectOption("starter");
-  await page.getByRole("button", { name: "Send lead" }).click();
-  await expect(page.getByText('"fullName": "Ada Lovelace"')).toBeVisible();
-
-  await page.goto("examples/vue/");
-  await expect(page.getByRole("heading", { name: "Form Schema Runtime in Vue" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Vue support request" })).toBeVisible();
-  await page.getByRole("button", { name: "Send request" }).click();
-  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
-  await page.getByLabel("Full name *").fill("Grace Hopper");
-  await page.getByLabel("Email *").fill("grace@example.com");
-  await page.getByLabel("Priority *").selectOption("normal");
-  await page.getByLabel("Message *").fill("Please review the support request.");
-  await page.getByRole("button", { name: "Send request" }).click();
-  await expect(page.getByText('"fullName": "Grace Hopper"')).toBeVisible();
-
-  await page.goto("examples/angular/");
-  await expect(page.getByRole("heading", { name: "Form Schema Runtime in Angular" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Angular access request" })).toBeVisible();
-  await page.getByRole("button", { name: "Request access" }).click();
-  await expect(page.getByLabel("Full name *")).toHaveAttribute("aria-invalid", "true");
-  await page.goto("examples/angular/");
-  await page.getByLabel("Full name *").fill("Katherine Johnson");
-  await page.getByLabel("Work email *").fill("katherine@example.com");
-  await page.getByRole("radio", { name: "Read" }).check();
-  await page.getByRole("button", { name: "Request access" }).click();
-  await expect(page.getByText('"fullName": "Katherine Johnson"')).toBeVisible();
+  await exerciseFrameworkExample(page, "examples/react/", "React");
+  await exerciseFrameworkExample(page, "examples/vue/", "Vue");
+  await exerciseFrameworkExample(page, "examples/angular/", "Angular");
 
   expect(consoleErrors).toEqual([]);
+});
+
+test("framework examples are usable on desktop and mobile without horizontal overflow", async ({ page }) => {
+  const examples = [
+    ["examples/react/", "React"],
+    ["examples/vue/", "Vue"],
+    ["examples/angular/", "Angular"]
+  ] as const;
+  const viewports = [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 }
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+
+    for (const [route, frameworkName] of examples) {
+      await page.goto(route);
+      await expect(page.getByRole("heading", { name: `Form Schema Runtime in ${frameworkName}` })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Submit request" })).toBeVisible();
+      await expect(page.locator(".department-picker")).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+  }
 });
 
 test("payment form validates custom money and invoice fields", async ({ page }) => {
@@ -258,10 +299,7 @@ test("desktop viewport keeps demo panels readable without horizontal overflow", 
   await expect(page.getByRole("link", { name: "API docs" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Coverage", exact: true })).toBeVisible();
 
-  const hasHorizontalOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
-  );
-  expect(hasHorizontalOverflow).toBe(false);
+  await expectNoHorizontalOverflow(page);
 });
 
 test("mobile viewport keeps controls usable without horizontal overflow", async ({ page }) => {
@@ -276,8 +314,5 @@ test("mobile viewport keeps controls usable without horizontal overflow", async 
   await page.getByLabel("First name *").fill("Ada");
   await expect(page.getByText('"firstName": "Ada"')).toBeVisible();
 
-  const hasHorizontalOverflow = await page.evaluate(
-    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
-  );
-  expect(hasHorizontalOverflow).toBe(false);
+  await expectNoHorizontalOverflow(page);
 });

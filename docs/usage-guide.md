@@ -21,6 +21,8 @@ import "form-schema-runtime/styles.css";
 
 The CSS import provides accessible default styling and CSS variables that can be overridden by the host application.
 
+For React, Vue, and Angular lifecycle examples, see the [Integration Guide](integration-guide.md) and the [framework consumer examples](../examples/README.md). They consume the published npm package and are not framework adapters.
+
 ## Minimal Setup
 
 Create a container in your page:
@@ -315,4 +317,3 @@ window.addEventListener("beforeunload", () => {
   form.destroy();
 });
 ```
-

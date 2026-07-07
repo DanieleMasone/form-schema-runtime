@@ -17,11 +17,13 @@ npm install form-schema-runtime
 
 The framework owns the host container and page lifecycle. `form-schema-runtime` owns only the DOM inside the container passed to `createForm`.
 
+All three examples use the same "enterprise access request" scenario. They demonstrate required validation, email validation, conditional visibility, a synchronous custom validator, a custom department renderer, scoped CSS variable overrides, submit handling, a small runtime state snapshot, and `form.destroy()` cleanup.
+
 ## Examples
 
 - [React Vite](react-vite/): mounts the runtime with `useRef` and `useEffect`.
 - [Vue Vite](vue-vite/): mounts the runtime with `ref`, `onMounted`, and `onUnmounted`.
-- [Angular](angular/): mounts the runtime from a standalone component with `ViewChild`, `AfterViewInit`, and `OnDestroy`.
+- [Angular](angular/): mounts the runtime from a standalone component with `ViewChild`, `ElementRef`, `AfterViewInit`, and `OnDestroy`.
 
 ## Published Pages Routes
 
@@ -41,7 +43,7 @@ npm run build:examples
 npm run test:examples
 ```
 
-`build:examples` installs each example with `npm install --package-lock=false`, builds it with the correct GitHub Pages base path, and copies the static output to `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/`. `test:examples` checks package imports, lifecycle patterns, package exclusion, and the built Pages output.
+`build:examples` installs each example with `npm install --package-lock=false`, builds it with the correct GitHub Pages base path, and copies the static output to `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/`. `test:examples` checks package imports, lifecycle patterns, custom validators, custom renderers, CSS variable theming, package exclusion, and the built Pages output.
 
 ## Run An Example
 
@@ -58,4 +60,4 @@ Use the package manager lockfile policy of the consuming application. This repos
 
 ## Why No Framework Adapters
 
-The core runtime is framework-agnostic on purpose. Framework applications can integrate it at their DOM boundary without adding React, Vue, Angular, or Svelte dependencies to the runtime package.
+The core runtime is framework-agnostic on purpose. Framework applications can integrate it at their DOM boundary without adding React, Vue, Angular, or Svelte dependencies to the runtime package. Use framework-native forms instead when every field needs to be a framework component, async validator, field array, or framework-specific form-control abstraction.

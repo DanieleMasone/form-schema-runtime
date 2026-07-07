@@ -32,6 +32,8 @@ Override variables in your application stylesheet:
 
 Use CSS variables for theming before replacing structural classes.
 
+The React, Vue, and Angular examples each scope a small set of CSS variable overrides under a local `.runtime-theme` container while still importing the default runtime CSS from the published package.
+
 ## Dark Mode Strategy
 
 Scope alternate variables under a class or media query:
@@ -110,6 +112,8 @@ Schema field:
 ```
 
 The registry is intentionally simple: a field type maps to a render function. There is no plugin lifecycle, dependency injection container, or component framework requirement.
+
+The framework examples use the same pattern for a custom department selector. The renderer is application code registered with `renderers`; it is not a framework adapter and it is not part of the runtime package.
 
 ## FieldRenderer Context
 
@@ -253,4 +257,3 @@ Do not:
 - remove labels or error semantics
 - create inaccessible custom widgets when a native control would work
 - introduce framework dependencies into the core runtime
-

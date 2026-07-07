@@ -2,7 +2,7 @@
 
 These examples show practical schema patterns for enterprise and legacy-friendly applications. They are intentionally plain TypeScript and do not require a framework adapter.
 
-Framework consumer apps are also published on the GitHub Pages site: [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), and [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/). They use the same package import and demonstrate lifecycle cleanup from framework-owned containers.
+Framework consumer apps are also published on the GitHub Pages site: [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), and [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/). They use the same package import and demonstrate lifecycle cleanup, validation, conditional fields, custom validators, custom renderers, CSS variable theming, and runtime state observation from framework-owned containers.
 
 ## Customer Onboarding
 

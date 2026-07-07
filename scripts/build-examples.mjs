@@ -28,7 +28,6 @@ const examples = [
     directory: "angular",
     route: "angular",
     buildArgs: ["run", "build", "--", "--base-href=/form-schema-runtime/examples/angular/"],
-    allowExistingOutputOnWindowsFailure: true,
     outputCandidates: [
       path.join("dist", "form-schema-runtime-angular-example", "browser"),
       path.join("dist", "form-schema-runtime-angular-example")
@@ -121,20 +120,7 @@ examples.forEach((example) => {
     exampleRoot,
     `Installing ${example.name} example dependencies`
   );
-  const existingOutput =
-    isWindows && example.allowExistingOutputOnWindowsFailure
-      ? findExistingBuiltOutput(exampleRoot, example.outputCandidates)
-      : null;
-
-  if (existingOutput) {
-    console.warn(
-      `Using existing ${example.name} build output on Windows because Angular CLI cannot build as a nested sandbox child process.`
-    );
-  } else {
-    runNpm(example.buildArgs, exampleRoot, `Building ${example.name} example`, {
-      allowFailure: isWindows && example.allowExistingOutputOnWindowsFailure
-    });
-  }
+  runNpm(example.buildArgs, exampleRoot, `Building ${example.name} example`);
 
   const builtOutput = findBuiltOutput(exampleRoot, example.outputCandidates);
   const destination = path.join(pagesExamplesRoot, example.route);

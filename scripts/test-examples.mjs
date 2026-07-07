@@ -22,7 +22,17 @@ const examples = [
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.tsx", "src/main.tsx"],
     requiredDependencies: ["form-schema-runtime", "react", "react-dom"],
     requiredDevDependencies: ["@vitejs/plugin-react", "typescript", "vite"],
-    requiredPatterns: [/useRef/, /useEffect/, /createForm/, /form\.destroy\(\)/]
+    requiredPatterns: [
+      /useRef/,
+      /useEffect/,
+      /createForm/,
+      /form\.destroy\(\)/,
+      /companyEmail/,
+      /departmentBadgeRenderer/,
+      /validators:/,
+      /renderers:/,
+      /--fsr-color-primary/
+    ]
   },
   {
     directory: "vue-vite",
@@ -31,7 +41,18 @@ const examples = [
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.vue", "src/main.ts"],
     requiredDependencies: ["form-schema-runtime", "vue"],
     requiredDevDependencies: ["@vitejs/plugin-vue", "typescript", "vite", "vue-tsc"],
-    requiredPatterns: [/ref<HTMLElement \| null>/, /onMounted/, /onUnmounted/, /createForm/, /form\?\.destroy\(\)/]
+    requiredPatterns: [
+      /ref<HTMLElement \| null>/,
+      /onMounted/,
+      /onUnmounted/,
+      /createForm/,
+      /form\?\.destroy\(\)/,
+      /companyEmail/,
+      /departmentBadgeRenderer/,
+      /validators:/,
+      /renderers:/,
+      /--fsr-color-primary/
+    ]
   },
   {
     directory: "angular",
@@ -50,7 +71,19 @@ const examples = [
     ],
     requiredDependencies: ["@angular/core", "@angular/platform-browser", "form-schema-runtime", "rxjs", "zone.js"],
     requiredDevDependencies: ["@angular/build", "@angular/cli", "@angular/compiler-cli", "typescript"],
-    requiredPatterns: [/ViewChild/, /ElementRef/, /AfterViewInit/, /OnDestroy/, /createForm/, /form\?\.destroy\(\)/]
+    requiredPatterns: [
+      /ViewChild/,
+      /ElementRef/,
+      /AfterViewInit/,
+      /OnDestroy/,
+      /createForm/,
+      /form\?\.destroy\(\)/,
+      /companyEmail/,
+      /departmentBadgeRenderer/,
+      /validators:/,
+      /renderers:/,
+      /--fsr-color-primary/
+    ]
   }
 ];
 

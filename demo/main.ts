@@ -47,6 +47,7 @@ function createDocumentationPanel(): HTMLElement {
   const links = el("nav", { className: "demo-doc-links", attributes: { "aria-label": "Documentation links" } });
 
   [
+    ["Documentation Index", "docs/"],
     ["Usage Guide", "docs/usage-guide.md"],
     ["Schema Reference", "docs/schema-reference.md"],
     ["Validation Guide", "docs/validation-guide.md"],
