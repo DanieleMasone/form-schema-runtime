@@ -167,6 +167,36 @@ test("documentation links are visible and published in the Pages artifact", asyn
   expect(consoleErrors).toEqual([]);
 });
 
+test("generated API docs and coverage report load without horizontal overflow", async ({ page }) => {
+  const consoleErrors = collectConsoleErrors(page);
+  const routes = [
+    {
+      route: "api/",
+      heading: /form-schema-runtime - v\d+\.\d+\.\d+/
+    },
+    {
+      route: "coverage/",
+      heading: "All files"
+    }
+  ] as const;
+  const viewports = [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 }
+  ] as const;
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+
+    for (const { route, heading } of routes) {
+      await page.goto(route);
+      await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+  }
+
+  expect(consoleErrors).toEqual([]);
+});
+
 test("framework examples load from Pages routes and exercise integration features", async ({ page }) => {
   const consoleErrors = collectConsoleErrors(page);
 

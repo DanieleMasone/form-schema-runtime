@@ -2,6 +2,8 @@
 
 This checklist tracks public runtime capabilities against implementation, documentation, demo coverage, unit tests, and Playwright coverage. "Partial" means the behavior is covered indirectly or in focused docs but is not highlighted as a standalone demo workflow.
 
+Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Implemented` set to `yes` but `no` or `partial` in Demo or E2E columns are not release blockers by themselves: normalization guards, security invariants, lifecycle cleanup, package metadata, and release checks are intentionally verified by focused unit, source, package, or workflow tests instead of duplicating every case in a browser journey.
+
 ## Fields
 
 | Capability | Implemented | Documented | Demo | Unit tests | E2E tests |

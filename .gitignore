@@ -29,6 +29,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Generated npm package archives
+*.tgz
+
 # Runtime caches and temporary files
 .cache/
 .angular/
