@@ -140,3 +140,9 @@ This v1 intentionally does not include:
 - Backend submission or storage.
 
 Those boundaries keep the runtime small, deterministic, and easy to embed in non-framework applications.
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE).
+
+Copyright (c) 2026 Daniele Masone.
