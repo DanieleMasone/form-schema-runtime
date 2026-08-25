@@ -117,6 +117,25 @@ Required validation checks for meaningful values. Empty strings, `null`, and `un
 
 Email validation runs automatically for `email` fields.
 
+## Custom Built-In Messages
+
+Use `validationMessages` to replace a built-in message for one field:
+
+```ts
+{
+  type: "email",
+  name: "email",
+  label: "Work email",
+  required: true,
+  validationMessages: {
+    required: "Enter a work email address.",
+    email: "Use a valid work email address."
+  }
+}
+```
+
+Supported keys are `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `email`, and `number`. The `number` key controls the fallback used when numeric range validation receives a non-numeric value. Custom validator messages come directly from the registered validator and are not configured through `validationMessages`.
+
 ## Custom Synchronous Validators
 
 Schemas reference validators by name:
@@ -263,4 +282,3 @@ if (isValid) {
 Async validation is intentionally out of scope in v1. It requires loading state, cancellation, race handling, and backend policy decisions.
 
 Schemas do not execute JavaScript. Custom validators are application code registered through `createForm`; schema data only references validator names.
-

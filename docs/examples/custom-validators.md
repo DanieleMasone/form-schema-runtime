@@ -38,6 +38,6 @@ createForm({
 });
 ```
 
-Validator context includes the current field name, all current values, and the normalized schema. Validators return a message string for invalid values or `null` for valid values.
+Validator context includes the current field name, all current values, and the owning form schema. Validators return a message string for invalid values or `null` for valid values.
 
 Keep validators deterministic and side-effect free. Async validation is intentionally outside v1 so validation behavior remains predictable in legacy and embedded environments.

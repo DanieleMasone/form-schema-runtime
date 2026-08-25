@@ -22,6 +22,12 @@ The stable release used the package version and matching GitHub Release tag:
 
 Future versions must also keep `package.json` and the GitHub Release tag aligned, for example package version `1.0.1` with tag `v1.0.1`. Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
 
+## npm README Lifecycle
+
+npm renders the root `README.md` contained in the published package. The package page README changes only when a new package version is published; changing `README.md` on GitHub does not update an existing npm version.
+
+Treat npm-facing README corrections as package changes. If a correction must appear on npmjs.com, prepare a new semantic version, keep the new version and GitHub Release tag aligned, and publish it through the normal release workflow. Use absolute public URLs in the root README because repository docs and framework example sources are intentionally excluded from the npm tarball.
+
 ## Release Philosophy
 
 - Keep CI and release publishing separate.
@@ -41,6 +47,8 @@ release:
 ```
 
 This means publishing a GitHub Release is the explicit release action. Pull requests and normal pushes verify the project through CI, but they do not publish to npm.
+
+The GitHub Release is the approval trigger and source tag; the package itself is published to the public npm registry at npmjs.com, not to GitHub Packages.
 
 GitHub can generate release notes from merged pull requests and contributors. The repository also includes `.github/release.yml` to keep generated notes grouped into Features, Fixes, Documentation, Maintenance, Dependencies, Tests, and Other Changes.
 
@@ -137,6 +145,7 @@ npm run lint
 npm test
 npm run test:coverage
 npm run build
+npm run test:site-docs
 npm run build:examples
 npm run test:examples
 npm run test:consumer
@@ -173,14 +182,15 @@ The workflow:
 5. runs typecheck
 6. runs lint
 7. runs unit tests
-8. generates coverage
-9. builds the package, demo, API docs, generated HTML docs from Markdown sources, and coverage page
-10. installs the packed package in a temporary consumer project
-11. verifies ESM import, CSS export, TypeScript declarations, and IIFE availability
-12. verifies package contents with `npm pack --dry-run --json`
-13. runs `npm pack --dry-run`
-14. checks that the package version is not already published on npm
-15. publishes to npm with Trusted Publishing/OIDC
+8. builds only the npm package with `npm run build:lib`
+9. installs the already-built package in a temporary consumer project
+10. verifies ESM import, CSS export, TypeScript declarations, and IIFE availability
+11. verifies package contents with `npm pack --dry-run --json`
+12. runs `npm pack --dry-run`
+13. checks that the package version is not already published on npm
+14. publishes to npm with Trusted Publishing/OIDC
+
+The release workflow deliberately does not build the demo, generated HTML docs, TypeDoc site, coverage site, framework examples, or run Playwright. CI verifies and deploys those Pages assets; they are not part of the npm tarball.
 
 ## Package Contents
 
@@ -200,6 +210,7 @@ After a successful release:
 ```bash
 npm view form-schema-runtime version
 npm view form-schema-runtime dist-tags
+npm view form-schema-runtime readme
 npm view form-schema-runtime repository homepage bugs
 npm view form-schema-runtime --json
 ```
@@ -227,7 +238,8 @@ FormSchemaRuntime
 
 ## If Publishing Fails
 
-- If the workflow fails before `npm publish`, fix the issue and create a new GitHub Release/tag when the tag should represent a new attempt.
+- If the workflow fails before `npm publish` because of a transient service or runner problem, it can be rerun while that version remains unpublished.
+- If source changes are required after the release tag was created, prepare a new version and matching tag instead of moving or force-pushing the existing tag.
 - If the workflow fails because the version is already published, bump `package.json` to a new version and create a new matching GitHub Release tag.
 - Do not rerun the same release expecting npm to overwrite an existing version.
 - If npm authentication fails, verify the npm Trusted Publisher package name, owner/repository, workflow filename, allowed action, and optional environment.
@@ -249,15 +261,17 @@ Never commit:
 
 ## CI vs Release
 
-CI runs on pushes and pull requests. It verifies install, typecheck, lint, unit tests, coverage, build, framework example builds, framework example checks, consumer package smoke test, Playwright, and Pages deployment on `main`.
+CI runs on pushes and pull requests. It verifies install, typecheck, lint, unit tests, coverage, the complete Pages build, generated HTML docs, framework example builds, framework example checks, consumer package smoke testing, Playwright, and Pages deployment on `main`.
 
-Release runs only when a GitHub Release is published. It repeats the package quality checks, runs the consumer smoke test, verifies package contents, and publishes to npm.
+Release runs only when a GitHub Release is published. It repeats package-focused quality checks, builds only the distributable library, runs the consumer smoke test, verifies package contents, and publishes to npm. Pages generation remains in CI.
 
 ## Official References
 
 - [GitHub Releases](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 - [GitHub generated release notes](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes)
 - [GitHub Actions Node.js package publishing](https://docs.github.com/en/actions/tutorials/publish-packages/publish-nodejs-packages)
+- [npm package README files](https://docs.npmjs.com/about-package-readme-files/)
+- [npm package.json and package files](https://docs.npmjs.com/files/package.json/)
 - [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
 - [npm provenance](https://docs.npmjs.com/generating-provenance-statements/)
 - [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/)

@@ -169,20 +169,50 @@ Custom renderers must preserve the accessibility contract:
 
 ```ts
 const renderer: FieldRenderer = (context) => {
+  const shell = document.createElement("div");
+  shell.className = `${context.classPrefix}-field`;
+
   const label = document.createElement("label");
+  label.className = `${context.classPrefix}-label`;
   label.htmlFor = context.inputId;
-  label.textContent = context.field.label;
+  label.textContent = context.field.required ? `${context.field.label} *` : context.field.label;
 
   const input = document.createElement("input");
+  input.className = `${context.classPrefix}-control`;
   input.id = context.inputId;
   input.name = context.field.name;
+  input.value = context.value == null ? "" : String(context.value);
+  input.required = context.field.required ?? false;
+  input.disabled = context.field.disabled ?? false;
   input.setAttribute("aria-invalid", context.errors.length > 0 ? "true" : "false");
 
   if (context.describedBy) {
     input.setAttribute("aria-describedby", context.describedBy);
   }
 
-  return document.createElement("div");
+  context.events.listen(input, "input", () => context.setValue(input.value));
+  context.events.listen(input, "blur", () => context.markTouched());
+
+  shell.append(label, input);
+
+  if (context.field.helpText) {
+    const help = document.createElement("p");
+    help.id = context.helpId;
+    help.className = `${context.classPrefix}-help`;
+    help.textContent = context.field.helpText;
+    shell.append(help);
+  }
+
+  if (context.errors.length > 0) {
+    const error = document.createElement("p");
+    error.id = context.errorId;
+    error.className = `${context.classPrefix}-error`;
+    error.role = "alert";
+    error.textContent = context.errors[0];
+    shell.append(error);
+  }
+
+  return shell;
 };
 ```
 
@@ -208,4 +238,3 @@ Before shipping a form:
 - Confirm help and error text are announced by assistive technology.
 - Confirm conditional fields appear and disappear without trapping focus.
 - Confirm custom renderers work without a mouse.
-

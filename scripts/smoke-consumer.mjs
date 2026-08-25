@@ -11,6 +11,7 @@ const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npmExecPath = process.env.npm_execpath;
 const npmCache = path.join(repositoryRoot, ".cache", "npm");
 const tempRoot = mkdtempSync(path.join(tmpdir(), "form-schema-runtime-consumer-"));
+const shouldBuild = !process.argv.includes("--skip-build");
 let tarballPath;
 
 function run(command, args, cwd = repositoryRoot) {
@@ -149,7 +150,10 @@ assert(packageJson.exports["./styles.css"].default === "./dist/form-schema-runti
 }
 
 try {
-  runNpm(["run", "build:lib"]);
+  if (shouldBuild) {
+    runNpm(["run", "build:lib"]);
+  }
+
   packLibrary();
   createConsumerProject();
   typecheckConsumer();

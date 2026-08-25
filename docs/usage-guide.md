@@ -21,7 +21,7 @@ import "form-schema-runtime/styles.css";
 
 The CSS import provides accessible default styling and CSS variables that can be overridden by the host application.
 
-For React, Vue, and Angular lifecycle examples, see the [Integration Guide](integration-guide.md) and the [framework consumer examples](../examples/README.md). They consume the published npm package and are not framework adapters.
+For React, Vue, and Angular lifecycle examples, see the [Integration Guide](integration-guide.md) and the live [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), and [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/) examples. They consume the published npm package and are not framework adapters.
 
 ## Minimal Setup
 
@@ -189,6 +189,19 @@ const form = createForm({
 ```
 
 `onChange` runs after user input and after `setValues()`.
+
+## Form State Snapshots
+
+The event hooks receive a `FormStateSnapshot` with the current observable state:
+
+- `values`: a defensive copy of values for every known field.
+- `touchedFields`: field names blurred by the user. Custom renderers add entries by calling `context.markTouched()`.
+- `dirtyFields`: field names whose current value differs from its initial value or field default.
+- `errors`: all current validation messages keyed by field name.
+- `isValid`: whether the current snapshot has no stored validation errors. Reading it does not run validation; call `validate()` when validity must be refreshed.
+- `visibleFields`: field names currently visible after conditions and parent section visibility are evaluated.
+
+Snapshots are passed to `onChange`, `onSubmit`, `onValidationError`, and `onReset`. Treat their arrays and objects as read-only observations; update values through `setValues()` or a renderer's `setValue()` callback.
 
 ## Resetting the Form
 

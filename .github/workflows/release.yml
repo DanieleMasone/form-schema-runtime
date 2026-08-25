@@ -42,14 +42,11 @@ jobs:
       - name: Unit tests
         run: npm test
 
-      - name: Coverage report
-        run: npm run test:coverage
-
-      - name: Build package and docs
-        run: npm run build
+      - name: Build npm package
+        run: npm run build:lib
 
       - name: Consumer smoke test
-        run: npm run test:consumer
+        run: npm run test:consumer -- --skip-build
 
       - name: Verify package contents
         run: node scripts/verify-release.mjs --tag "${{ github.event.release.tag_name }}" --pack

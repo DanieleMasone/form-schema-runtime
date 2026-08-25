@@ -15,16 +15,27 @@ const schema: FormSchema = {
 };
 ```
 
-- `id`: stable schema identifier used for generated DOM IDs.
-- `title`: optional form heading.
-- `description`: optional safe text below the title.
-- `submitLabel`: optional submit button label. Defaults to `Submit`.
-- `resetLabel`: optional reset button label. Defaults to `Reset`.
-- `fields`: top-level fields and sections.
+| Property | Required | Description |
+| --- | --- | --- |
+| `id` | yes | Stable schema identifier used for generated DOM IDs. |
+| `fields` | yes | Top-level fields and sections. |
+| `title` | no | Form heading. |
+| `description` | no | Safe text rendered below the title. |
+| `submitLabel` | no | Submit button label. Defaults to `Submit`. |
+| `resetLabel` | no | Reset button label. Defaults to `Reset`. |
 
 ## Sections and Groups
 
 Sections group fields visually and semantically. They render as native `fieldset` elements with a `legend`.
+
+| Property | Required | Description |
+| --- | --- | --- |
+| `type` | yes | Must be `section`. |
+| `title` | yes | Visible `legend` text. |
+| `fields` | yes | Child fields or nested sections. |
+| `description` | no | Safe explanatory text below the legend. |
+| `id` | no | Stable identifier used when deriving section paths. |
+| `visibleWhen` | no | Visibility rule applied to the section and all its children. |
 
 ```ts
 {
@@ -57,6 +68,30 @@ Each field needs a unique `name` within the form schema:
 ```
 
 The name is used in values, dirty/touched state, validation errors, and submit payloads.
+
+## Field Properties
+
+Every built-in and custom value-producing field uses `FieldSchema`.
+
+| Property | Required | Description |
+| --- | --- | --- |
+| `type` | yes | Built-in field type or a custom type with a registered renderer. |
+| `name` | yes | Unique value key within the form. |
+| `label` | yes | Visible label for the control. |
+| `id` | no | Stable identifier used when deriving normalized field metadata. Defaults from `name`. |
+| `visibleWhen` | no | One visibility condition or a simple AND array. |
+| `placeholder` | no | Native placeholder for text-like controls; never a label replacement. |
+| `helpText` | no | Descriptive text wired through `aria-describedby`. |
+| `required` | no | Enables required validation and native required state. |
+| `disabled` | no | Applies the native disabled state. |
+| `readonly` | no | Applies to text-like native controls. |
+| `options` | for `select` and `radio` | Non-empty list of unique `{ label, value }` options. |
+| `defaultValue` | no | Initial field value when no form-level initial value is provided. |
+| `minLength`, `maxLength` | no | String length limits. |
+| `min`, `max` | no | Numeric range limits. |
+| `pattern` | no | JavaScript regular expression source used for validation. |
+| `validators` | no | Names of registered synchronous custom validators. |
+| `validationMessages` | no | Per-rule overrides for built-in validation messages. |
 
 ## Labels, Placeholders, and Help Text
 
@@ -153,6 +188,8 @@ options: [
 
 Option values must be unique within a field.
 
+Built-in `select` and `radio` controls read values through the native DOM and therefore store the selected value as a string after user interaction. Prefer string option values when value type stability matters.
+
 ## Field-Level Validation Rules
 
 Supported built-in rules:
@@ -190,6 +227,19 @@ Custom validators are referenced by name:
 ```
 
 Validators are registered from application code through `createForm({ validators })`.
+
+`validationMessages` supports these keys:
+
+- `required`
+- `minLength`
+- `maxLength`
+- `min`
+- `max`
+- `pattern`
+- `email`
+- `number`
+
+These keys override built-in messages only. Custom validators return their own message strings.
 
 ## Conditional Visibility
 
@@ -360,4 +410,3 @@ Use `radio` for a small list of mutually exclusive visible choices.
 ```
 
 Radio groups render with `role="radiogroup"` and a labelled group.
-

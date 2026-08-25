@@ -46,6 +46,7 @@ const releaseTag = tagArgIndex >= 0 ? args[tagArgIndex + 1] : undefined;
 const shouldVerifyPack = args.includes("--pack");
 const shouldCheckPublished = args.includes("--check-published");
 const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const packageReadme = readFileSync(new URL("../README.md", import.meta.url), "utf8");
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 
 function fail(message) {
@@ -89,6 +90,17 @@ function validatePackageMetadata() {
   assert(packageJson.jsdelivr === "./dist/form-schema-runtime.iife.js", "jsDelivr IIFE path is incorrect.");
   assert(packageJson.publishConfig?.access === "public", "publishConfig.access must be public.");
   assert(packageJson.private !== true, "Package must not be private.");
+}
+
+function validatePackageReadme() {
+  const relativeLinks = [...packageReadme.matchAll(/!?\[[^\]]*\]\(([^)]+)\)/gu)]
+    .map((match) => match[1].trim().split(/\s+/u)[0])
+    .filter((href) => !/^(?:https?:\/\/|mailto:|#)/u.test(href));
+
+  assert(
+    relativeLinks.length === 0,
+    `README.md is rendered on npm and must use public absolute URLs. Relative links: ${relativeLinks.join(", ")}`
+  );
 }
 
 function fetchNpmPackageMetadata(packageName) {
@@ -218,6 +230,7 @@ function validatePackContents() {
 }
 
 validatePackageMetadata();
+validatePackageReadme();
 validateReleaseTag();
 
 if (shouldVerifyPack) {

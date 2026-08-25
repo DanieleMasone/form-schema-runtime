@@ -197,6 +197,7 @@ Guidance:
 
 - Import the runtime CSS once in the application entry point or wrapper.
 - Do not render React children inside the same container that the runtime owns.
+- Use `onChange` only for surrounding React UI that needs runtime state; avoid mirroring every field value into React state.
 - Destroy and recreate the instance when the schema changes.
 - Memoize schema objects and callbacks if the wrapper should not remount on every render.
 

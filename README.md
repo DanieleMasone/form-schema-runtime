@@ -11,6 +11,7 @@ Framework-agnostic TypeScript runtime for rendering accessible, customizable HTM
 It targets enterprise and legacy-friendly frontend surfaces where React, Angular, Vue, or Svelte cannot always be introduced, but teams still need typed schemas, validation, state hooks, accessible native controls, and safe DOM rendering.
 
 - Live demo: [danielemasone.github.io/form-schema-runtime](https://danielemasone.github.io/form-schema-runtime/)
+- Documentation: [danielemasone.github.io/form-schema-runtime/docs/](https://danielemasone.github.io/form-schema-runtime/docs/)
 - API docs: [danielemasone.github.io/form-schema-runtime/api/](https://danielemasone.github.io/form-schema-runtime/api/)
 - Coverage report: [danielemasone.github.io/form-schema-runtime/coverage/](https://danielemasone.github.io/form-schema-runtime/coverage/)
 - Framework examples: [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/)
@@ -60,26 +61,15 @@ const form = createForm({
 });
 ```
 
-Use the returned instance for `getValues`, `setValues`, `validate`, `reset`, and `destroy`. See the usage guide for the full lifecycle.
+Use the returned instance for `getValues`, `setValues`, `validate`, `reset`, and `destroy`. See the [Usage Guide](https://danielemasone.github.io/form-schema-runtime/docs/usage-guide/) for the full lifecycle.
 
 ## Documentation
 
-- [Usage Guide](docs/usage-guide.md)
-- [Schema Reference](docs/schema-reference.md)
-- [Validation Guide](docs/validation-guide.md)
-- [Customization Guide](docs/customization-guide.md)
-- [Accessibility Guide](docs/accessibility-guide.md)
-- [Integration Guide](docs/integration-guide.md)
-- [Real-World Examples](docs/real-world-examples.md)
-- [Framework Consumer Examples](examples/README.md)
-- [React Vite Example](examples/react-vite/)
-- [Vue Vite Example](examples/vue-vite/)
-- [Angular Example](examples/angular/)
-- [Release Process](docs/release-process.md)
-- [Generated API Docs](https://danielemasone.github.io/form-schema-runtime/api/)
-- [Feature Matrix](docs/feature-matrix.md)
-- [Market Positioning](docs/market-positioning.md)
-- [Coverage Report](https://danielemasone.github.io/form-schema-runtime/coverage/)
+- Start at the [Documentation Index](https://danielemasone.github.io/form-schema-runtime/docs/).
+- Guides: [Usage](https://danielemasone.github.io/form-schema-runtime/docs/usage-guide/), [Schema](https://danielemasone.github.io/form-schema-runtime/docs/schema-reference/), [Validation](https://danielemasone.github.io/form-schema-runtime/docs/validation-guide/), [Customization](https://danielemasone.github.io/form-schema-runtime/docs/customization-guide/), [Accessibility](https://danielemasone.github.io/form-schema-runtime/docs/accessibility-guide/), [Integration](https://danielemasone.github.io/form-schema-runtime/docs/integration-guide/), and [Real-World Examples](https://danielemasone.github.io/form-schema-runtime/docs/real-world-examples/).
+- Project reference: [Feature Matrix](https://danielemasone.github.io/form-schema-runtime/docs/feature-matrix/), [Market Positioning](https://danielemasone.github.io/form-schema-runtime/docs/market-positioning/), and [Release Process](https://danielemasone.github.io/form-schema-runtime/docs/release-process/).
+- Generated reports: [API Docs](https://danielemasone.github.io/form-schema-runtime/api/) and [Coverage](https://danielemasone.github.io/form-schema-runtime/coverage/).
+- Framework examples: [React](https://danielemasone.github.io/form-schema-runtime/examples/react/), [Vue](https://danielemasone.github.io/form-schema-runtime/examples/vue/), and [Angular](https://danielemasone.github.io/form-schema-runtime/examples/angular/).
 
 ## Architecture
 
@@ -125,7 +115,7 @@ Releases are GitHub Release driven. Publishing to npm is handled by a dedicated 
 
 `v1.0.0` is the first stable release. Historical notes for `v0.1.0` and `v0.1.1` are documented in the release process. npm versions cannot be overwritten, so each release needs a new `package.json` version and matching GitHub Release tag.
 
-See [docs/release-process.md](docs/release-process.md) for setup, tag conventions, verification, publishing, provenance, and failure handling.
+See the [Release Process](https://danielemasone.github.io/form-schema-runtime/docs/release-process/) for setup, tag conventions, verification, publishing, provenance, and failure handling.
 
 ## Trade-Offs
 
@@ -143,6 +133,6 @@ Those boundaries keep the runtime small, deterministic, and easy to embed in non
 
 ## License
 
-Released under the MIT License. See [LICENSE](LICENSE).
+Released under the [MIT License](https://github.com/DanieleMasone/form-schema-runtime/blob/main/LICENSE).
 
 Copyright (c) 2026 Daniele Masone.

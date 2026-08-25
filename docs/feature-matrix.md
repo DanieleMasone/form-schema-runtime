@@ -1,15 +1,15 @@
 # Feature Verification Matrix
 
-This checklist tracks public runtime capabilities against implementation, documentation, demo coverage, unit tests, and Playwright coverage. "Partial" means the behavior is covered indirectly or in focused docs but is not highlighted as a standalone demo workflow.
+This checklist tracks public runtime capabilities against implementation, documentation, demo coverage, focused verification, and Playwright coverage. "Partial" means the behavior is covered indirectly or in focused docs but is not highlighted as a standalone demo workflow. Focused verification means Vitest unless the cell names a source, package, build, or workflow check.
 
 Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Implemented` set to `yes` but `no` or `partial` in Demo or E2E columns are not release blockers by themselves: normalization guards, security invariants, lifecycle cleanup, package metadata, and release checks are intentionally verified by focused unit, source, package, or workflow tests instead of duplicating every case in a browser journey.
 
 ## Fields
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | text, email, number, password | yes | README, Schema Reference, API docs | yes | yes | yes |
-| textarea | yes | Schema Reference, Real-World Examples, API docs | yes | yes | partial |
+| textarea | yes | Schema Reference, Real-World Examples, API docs | yes | yes | yes |
 | select | yes | Schema Reference, Usage Guide, API docs | yes | yes | yes |
 | checkbox | yes | Schema Reference, Real-World Examples, API docs | yes | yes | yes |
 | radio | yes | Schema Reference, Real-World Examples, API docs | yes | yes | yes |
@@ -17,7 +17,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Field Features
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | labels | yes | Accessibility Guide, Schema Reference | yes | yes | yes |
 | placeholder | yes | Schema Reference, Real-World Examples | yes | yes | partial |
@@ -32,7 +32,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Validation
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | required | yes | Validation Guide, Accessibility Guide | yes | yes | yes |
 | minLength and maxLength | yes | Validation Guide, Real-World Examples | yes | yes | partial |
@@ -47,7 +47,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## State
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | current values | yes | Usage Guide, API docs | yes | yes | yes |
 | touched fields | yes | Usage Guide, API docs | yes | yes | yes |
@@ -63,7 +63,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Conditions
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | equals | yes | Schema Reference, Usage Guide | yes | yes | yes |
 | notEquals | yes | Schema Reference, Real-World Examples | partial | yes | no |
@@ -74,7 +74,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Customization
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | CSS variables | yes | Customization Guide, examples | yes | partial | yes |
 | stable CSS classes | yes | Customization Guide | yes | yes | yes |
@@ -86,7 +86,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Accessibility
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | native controls | yes | Accessibility Guide, README | yes | yes | yes |
 | label/input association | yes | Accessibility Guide | yes | yes | yes |
@@ -100,7 +100,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Security
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | schema labels rendered as text | yes | Security notes in docs | partial | yes | no |
 | help text rendered as text | yes | Security notes in docs | partial | yes | no |
@@ -112,7 +112,7 @@ Rows with `Implemented` set to `no` are explicit non-goals for v1. Rows with `Im
 
 ## Release and Package
 
-| Capability | Implemented | Documented | Demo | Unit tests | E2E tests |
+| Capability | Implemented | Documented | Demo | Focused verification | E2E tests |
 | --- | --- | --- | --- | --- | --- |
 | aligned lockfile for `npm ci` | yes | Release Process | no | install check | CI |
 | package metadata verification | yes | Release Process | no | release script | CI/release |

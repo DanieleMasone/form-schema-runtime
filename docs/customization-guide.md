@@ -12,21 +12,32 @@ Import the default stylesheet once in the host application. It defines the base 
 
 ## CSS Variables
 
-Override variables in your application stylesheet:
+The distributed stylesheet defines these variables:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `--fsr-color-bg` | `#ffffff` | Form controls, buttons, and section backgrounds. |
+| `--fsr-color-panel` | `#f8fafc` | Panel token available to host themes; core sections currently use `--fsr-color-bg`. |
+| `--fsr-color-text` | `#172033` | Primary text. |
+| `--fsr-color-muted` | `#5f6b7a` | Descriptions and help text. |
+| `--fsr-color-border` | `#c9d3df` | Section borders. |
+| `--fsr-color-border-strong` | `#8ea0b4` | Control and secondary button borders. |
+| `--fsr-color-primary` | `#166a6f` | Primary button and focus treatment. |
+| `--fsr-color-primary-contrast` | `#ffffff` | Text on the primary button. |
+| `--fsr-color-danger` | `#b42318` | Invalid states, errors, and error-summary links. |
+| `--fsr-color-danger-bg` | `#fff3f0` | Error-summary background. |
+| `--fsr-radius` | `6px` | Control, button, section, and summary radius. |
+| `--fsr-spacing` | `1rem` | Main form layout gap. |
+| `--fsr-font-family` | system sans-serif stack | Runtime typography. |
+
+Override only the tokens your host application needs:
 
 ```css
-:root {
-  --fsr-color-bg: #ffffff;
-  --fsr-color-panel: #f8fafc;
-  --fsr-color-text: #172033;
-  --fsr-color-muted: #5e6b7d;
-  --fsr-color-border: #cad5e1;
-  --fsr-color-border-strong: #8798aa;
-  --fsr-color-primary: #166a6f;
+.customer-theme {
+  --fsr-color-primary: #005ea8;
   --fsr-color-primary-contrast: #ffffff;
-  --fsr-color-danger: #b42318;
-  --fsr-color-danger-bg: #fff2ee;
-  --fsr-radius: 6px;
+  --fsr-radius: 4px;
+  --fsr-spacing: 1.25rem;
 }
 ```
 
@@ -59,15 +70,19 @@ The demo uses this pattern for its dark mode toggle.
 Default classes use the `fsr` prefix, for example:
 
 - `fsr-form`
+- `fsr-title`, `fsr-description`
+- `fsr-section`, `fsr-section-title`, `fsr-section-description`
 - `fsr-field`
+- `fsr-field--invalid`
 - `fsr-label`
 - `fsr-control`
 - `fsr-help`
 - `fsr-error`
 - `fsr-error-summary`
-- `fsr-section`
+- `fsr-error-summary-title`, `fsr-error-summary-list`
+- `fsr-radio-group`, `fsr-choice`, `fsr-choice-input`, `fsr-choice-label`
 - `fsr-actions`
-- `fsr-button`
+- `fsr-button`, `fsr-button--primary`
 
 Prefer CSS variables for broad theming and class selectors for targeted layout refinements.
 
@@ -163,12 +178,23 @@ export const moneyRenderer: FieldRenderer = (context) => {
   prefix.textContent = "EUR";
 
   const input = document.createElement("input");
+  input.className = `${context.classPrefix}-control`;
   input.id = context.inputId;
   input.name = context.field.name;
   input.type = "number";
   input.value = context.value == null ? "" : String(context.value);
   input.required = context.field.required ?? false;
   input.disabled = context.field.disabled ?? false;
+  input.readOnly = context.field.readonly ?? false;
+
+  if (context.field.min !== undefined) {
+    input.min = String(context.field.min);
+  }
+
+  if (context.field.max !== undefined) {
+    input.max = String(context.field.max);
+  }
+
   input.setAttribute("aria-invalid", context.errors.length > 0 ? "true" : "false");
 
   if (context.describedBy) {
@@ -184,7 +210,7 @@ export const moneyRenderer: FieldRenderer = (context) => {
   });
 
   wrapper.append(prefix, input);
-  shell.append(label);
+  shell.append(label, wrapper);
 
   if (context.field.helpText) {
     const help = document.createElement("p");
@@ -203,7 +229,6 @@ export const moneyRenderer: FieldRenderer = (context) => {
     shell.append(error);
   }
 
-  shell.append(wrapper);
   return shell;
 };
 ```

@@ -46,7 +46,7 @@
 
 ## CI and Build Expectations
 
-- Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, build, Playwright, and Pages deployment.
+- Keep CI to meaningful steps: install, typecheck, lint, unit tests, coverage, the full Pages build, generated HTML docs checks, framework examples, consumer smoke testing, Playwright, and Pages deployment.
 - Framework examples are allowed only under `examples/`; they must remain consumer apps rather than core runtime code.
 - Framework examples must use published package imports such as `form-schema-runtime` and `form-schema-runtime/styles.css`, not local `src` imports.
 - Framework examples must not become adapters or new framework-specific packages.
@@ -62,9 +62,11 @@
 - Do not commit generated build outputs.
 - Do not commit generated coverage reports.
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
-- Keep `npm run build` producing the library, demo, API docs, and coverage page when coverage has been generated.
+- Keep `npm run build` producing the library, demo, TypeDoc API docs, generated HTML docs from the Markdown sources, and coverage page when coverage has been generated.
+- Validate generated HTML documentation with `npm run test:site-docs`; Markdown under `docs/` remains the canonical source.
 - Pages artifact structure should remain root demo, `/docs/` generated HTML docs from Markdown sources, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
+- Keep npm release builds package-focused: use `npm run build:lib` and do not generate demo, docs, coverage, or framework example Pages assets in the release workflow.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
 - Release tags must exactly match `package.json` versions, for example `1.0.0` requires `v1.0.0`.
 - Never try to republish an existing npm version; npm package versions are immutable.

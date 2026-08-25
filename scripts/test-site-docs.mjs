@@ -40,6 +40,24 @@ function walkFiles(directory) {
   });
 }
 
+function resolveLocalSiteTarget(href) {
+  const sitePrefix = "/form-schema-runtime/";
+
+  if (!href.startsWith(sitePrefix)) {
+    return null;
+  }
+
+  const relativePath = decodeURIComponent(href.slice(sitePrefix.length).split(/[?#]/u)[0]);
+
+  if (!relativePath) {
+    return path.join(repositoryRoot, "dist-demo", "index.html");
+  }
+
+  return relativePath.endsWith("/")
+    ? path.join(repositoryRoot, "dist-demo", relativePath, "index.html")
+    : path.join(repositoryRoot, "dist-demo", relativePath);
+}
+
 if (!existsSync(docsRoot)) {
   fail("dist-demo/docs is missing. Run npm run build before npm run test:site-docs.");
 } else {
@@ -56,6 +74,26 @@ if (!existsSync(docsRoot)) {
   if (markdownFiles.length > 0) {
     fail(`dist-demo/docs must expose generated HTML docs, not raw Markdown files: ${markdownFiles.join(", ")}`);
   }
+
+  walkFiles(docsRoot)
+    .filter((filePath) => filePath.endsWith(".html"))
+    .forEach((filePath) => {
+      const html = readFileSync(filePath, "utf8");
+
+      [...html.matchAll(/href="([^"]+)"/gu)].forEach((match) => {
+        const href = match[1];
+
+        if (href.includes(".md")) {
+          fail(`Generated docs link must not expose Markdown directly: ${href} in ${filePath}.`);
+        }
+
+        const localTarget = resolveLocalSiteTarget(href);
+
+        if (localTarget && !existsSync(localTarget)) {
+          fail(`Generated docs link target is missing: ${href} in ${filePath}.`);
+        }
+      });
+    });
 
   const indexHtml = readFileSync(path.join(docsRoot, "index.html"), "utf8");
   const usageHtml = readFileSync(path.join(docsRoot, "usage-guide", "index.html"), "utf8");
