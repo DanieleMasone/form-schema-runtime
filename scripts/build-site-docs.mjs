@@ -1,11 +1,14 @@
-import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 const docsSourceRoot = path.join(repositoryRoot, "docs");
 const docsTargetRoot = path.join(repositoryRoot, "dist-demo", "docs");
+const docsStylesSource = path.join(repositoryRoot, "site-docs", "docs.css");
+const docsNavigationSource = path.join(repositoryRoot, "site-docs", "navigation.js");
 const siteBase = "/form-schema-runtime/";
+const siteOrigin = "https://danielemasone.github.io";
 
 const primaryDocs = [
   { title: "Usage Guide", source: "usage-guide.md", description: "Installation, setup, lifecycle, state, and common workflows." },
@@ -21,9 +24,21 @@ const primaryDocs = [
 ];
 
 const supplementalDocs = [
-  { title: "Custom Validators Example", source: "examples/custom-validators.md" },
-  { title: "Custom Renderers Example", source: "examples/custom-renderers.md" },
-  { title: "ADR 0001: Framework-Agnostic TypeScript Core", source: "adr/0001-framework-agnostic-typescript-core.md" }
+  {
+    title: "Custom Validators Example",
+    source: "examples/custom-validators.md",
+    description: "A complete synchronous custom validator example."
+  },
+  {
+    title: "Custom Renderers Example",
+    source: "examples/custom-renderers.md",
+    description: "A complete accessible custom field renderer example."
+  },
+  {
+    title: "ADR 0001: Framework-Agnostic TypeScript Core",
+    source: "adr/0001-framework-agnostic-typescript-core.md",
+    description: "The architectural decision behind the framework-agnostic DOM runtime."
+  }
 ];
 
 function slugFromSource(source) {
@@ -106,8 +121,8 @@ function renderTable(rows) {
   );
   const [head, , ...body] = parsedRows;
 
-  return `<div class="docs-table-wrap"><table><thead><tr>${head
-    .map((cell) => `<th>${renderInline(cell)}</th>`)
+  return `<div class="docs-table-wrap" role="region" aria-label="Scrollable data table" tabindex="0"><table><thead><tr>${head
+    .map((cell) => `<th scope="col">${renderInline(cell)}</th>`)
     .join("")}</tr></thead><tbody>${body
     .map((row) => `<tr>${row.map((cell) => `<td>${renderInline(cell)}</td>`).join("")}</tr>`)
     .join("")}</tbody></table></div>`;
@@ -168,7 +183,7 @@ function renderMarkdown(markdown) {
 
       index += 1;
       blocks.push(
-        `<pre class="docs-code"><code${language ? ` class="language-${escapeHtml(language)}"` : ""}>${escapeHtml(
+        `<pre class="docs-code" tabindex="0"><code${language ? ` class="language-${escapeHtml(language)}"` : ""}>${escapeHtml(
           code.join("\n")
         )}</code></pre>`
       );
@@ -240,9 +255,12 @@ function renderMarkdown(markdown) {
   };
 }
 
-function navigationLinks() {
+function navigationLinks(currentSource) {
   return primaryDocs
-    .map((doc) => `<a href="${pageHref(doc.source)}">${escapeHtml(doc.title)}</a>`)
+    .map((doc) => {
+      const current = doc.source === currentSource ? ' aria-current="page"' : "";
+      return `<a href="${pageHref(doc.source)}"${current}>${escapeHtml(doc.title)}</a>`;
+    })
     .join("");
 }
 
@@ -253,19 +271,24 @@ function renderToc(headings) {
     return "";
   }
 
-  return `<aside class="docs-toc" aria-label="Table of contents"><h2>On This Page</h2><ol>${tocItems
+  return `<details class="docs-toc"><summary>On this page</summary><ol>${tocItems
     .map((heading) => `<li class="toc-level-${heading.level}"><a href="#${heading.id}">${escapeHtml(heading.text)}</a></li>`)
-    .join("")}</ol></aside>`;
+    .join("")}</ol></details>`;
 }
 
-function pageShell({ title, description, body, toc = "" }) {
+function pageShell({ title, description, body, toc = "", currentSource, canonicalPath }) {
+  const mainClass = toc ? "docs-main docs-main--with-toc" : "docs-main";
+
   return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="${siteOrigin}${canonicalPath}" />
     <title>${escapeHtml(title)} | form-schema-runtime</title>
     <link rel="stylesheet" href="${siteBase}docs/assets/docs.css" />
+    <script type="module" src="${siteBase}docs/assets/navigation.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -274,20 +297,27 @@ function pageShell({ title, description, body, toc = "" }) {
         <a class="docs-brand" href="${siteBase}">form-schema-runtime</a>
         <p>${escapeHtml(description)}</p>
       </div>
-      <nav class="docs-top-links" aria-label="Project links">
+      <nav class="docs-top-links" aria-label="Project">
         <a href="${siteBase}">Demo</a>
+        <a href="${siteBase}docs/" aria-current="page">Docs</a>
         <a href="${siteBase}api/">API</a>
+        <a href="${siteBase}#framework-examples">Examples</a>
         <a href="${siteBase}coverage/">Coverage</a>
         <a href="https://www.npmjs.com/package/form-schema-runtime">npm</a>
         <a href="https://github.com/DanieleMasone/form-schema-runtime">GitHub</a>
       </nav>
     </header>
     <div class="docs-layout">
-      <nav class="docs-side-nav" aria-label="Documentation">${navigationLinks()}</nav>
-      <main id="content" class="docs-content">
-        ${body}
+      <details class="docs-navigation">
+        <summary>Documentation pages</summary>
+        <nav class="docs-side-nav" aria-label="Documentation">${navigationLinks(currentSource)}</nav>
+      </details>
+      <main id="content" class="${mainClass}">
+        ${toc}
+        <article class="docs-content">
+          ${body}
+        </article>
       </main>
-      ${toc}
     </div>
   </body>
 </html>`;
@@ -307,336 +337,19 @@ function renderIndexPage() {
 
   return pageShell({
     title: "Documentation",
-    description: "HTML documentation generated from the repository Markdown sources.",
+    description: "Guides and references for installing, configuring, extending, and integrating form-schema-runtime.",
+    canonicalPath: `${siteBase}docs/`,
     body: `<section class="docs-hero">
           <p class="docs-eyebrow">Documentation</p>
           <h1>Documentation</h1>
-          <p>These pages are generated at build time from the repository Markdown docs. Use them for the live GitHub Pages experience; use the Markdown files when browsing source on GitHub.</p>
+          <p>Start with the Usage Guide for a working form, then use the focused references for schema design, validation, customization, accessibility, and framework lifecycle integration.</p>
         </section>
         <section class="docs-card-grid" aria-label="Primary documentation">${primaryCards}</section>
         <section class="docs-extra">
-          <h2>Supplemental Docs</h2>
+          <h2>Supplemental documentation</h2>
           <ul>${supplementalLinks}</ul>
         </section>`
   });
-}
-
-function docsStyles() {
-  return `:root {
-  --docs-bg: #f7f9fc;
-  --docs-panel: #ffffff;
-  --docs-text: #172033;
-  --docs-muted: #5d6b7d;
-  --docs-border: #d8e0ea;
-  --docs-primary: #166a6f;
-  --docs-primary-dark: #104d52;
-  --docs-code-bg: #101827;
-  --docs-code-text: #edf4ff;
-  --docs-radius: 8px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-padding-top: 16px;
-}
-
-body {
-  margin: 0;
-  color: var(--docs-text);
-  background: var(--docs-bg);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  line-height: 1.65;
-}
-
-a {
-  color: var(--docs-primary);
-  font-weight: 700;
-}
-
-a:hover {
-  color: var(--docs-primary-dark);
-}
-
-.skip-link {
-  position: absolute;
-  left: 16px;
-  top: 12px;
-  z-index: 10;
-  padding: 8px 10px;
-  transform: translateY(-160%);
-  border-radius: var(--docs-radius);
-  color: #ffffff;
-  background: var(--docs-primary);
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
-
-.docs-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 24px clamp(16px, 4vw, 48px);
-  border-bottom: 1px solid var(--docs-border);
-  background: var(--docs-panel);
-}
-
-.docs-brand {
-  display: inline-block;
-  margin-bottom: 6px;
-  color: var(--docs-text);
-  font-size: 1.1rem;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.docs-header p {
-  max-width: 62ch;
-  margin: 0;
-  color: var(--docs-muted);
-}
-
-.docs-top-links,
-.docs-side-nav {
-  display: flex;
-  gap: 10px;
-}
-
-.docs-top-links {
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.docs-top-links a,
-.docs-side-nav a {
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius);
-  background: var(--docs-panel);
-  text-decoration: none;
-}
-
-.docs-top-links a {
-  padding: 8px 10px;
-}
-
-.docs-layout {
-  display: grid;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) minmax(180px, 240px);
-  gap: 24px;
-  width: min(1440px, 100%);
-  margin: 0 auto;
-  padding: 24px clamp(14px, 3vw, 40px) 48px;
-}
-
-.docs-side-nav,
-.docs-toc {
-  position: sticky;
-  top: 16px;
-  align-self: start;
-  max-height: calc(100vh - 32px);
-  overflow: auto;
-}
-
-.docs-side-nav {
-  flex-direction: column;
-}
-
-.docs-side-nav a {
-  padding: 9px 10px;
-  color: var(--docs-text);
-}
-
-.docs-content {
-  min-width: 0;
-  padding: clamp(18px, 3vw, 36px);
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius);
-  background: var(--docs-panel);
-}
-
-.docs-content > :first-child {
-  margin-top: 0;
-}
-
-.docs-content h1 {
-  margin: 0 0 18px;
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  line-height: 1.05;
-}
-
-.docs-content h2 {
-  margin-top: 36px;
-  padding-top: 10px;
-  border-top: 1px solid var(--docs-border);
-  font-size: 1.55rem;
-}
-
-.docs-content h3 {
-  margin-top: 26px;
-  font-size: 1.2rem;
-}
-
-.docs-content p,
-.docs-content li {
-  max-width: 78ch;
-}
-
-.docs-content code {
-  padding: 0.1em 0.35em;
-  border-radius: 5px;
-  background: #edf2f7;
-  font-size: 0.92em;
-}
-
-.docs-code {
-  overflow-x: auto;
-  max-width: 100%;
-  padding: 16px;
-  border-radius: var(--docs-radius);
-  background: var(--docs-code-bg);
-}
-
-.docs-code code {
-  padding: 0;
-  color: var(--docs-code-text);
-  background: transparent;
-}
-
-.docs-table-wrap {
-  overflow-x: auto;
-  max-width: 100%;
-  margin: 20px 0;
-}
-
-table {
-  width: 100%;
-  min-width: 640px;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 10px;
-  border: 1px solid var(--docs-border);
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  background: #eef5f6;
-}
-
-.docs-toc {
-  padding: 16px;
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius);
-  background: var(--docs-panel);
-}
-
-.docs-toc h2 {
-  margin: 0 0 8px;
-  font-size: 0.95rem;
-}
-
-.docs-toc ol {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.docs-toc li {
-  margin: 6px 0;
-}
-
-.docs-toc .toc-level-3 {
-  margin-left: 12px;
-}
-
-.docs-hero {
-  padding-bottom: 24px;
-}
-
-.docs-eyebrow {
-  margin: 0 0 8px;
-  color: var(--docs-primary);
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.docs-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
-.docs-card {
-  padding: 16px;
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius);
-  background: #fbfdff;
-}
-
-.docs-card h2 {
-  margin: 0 0 8px;
-  padding: 0;
-  border: 0;
-  font-size: 1.1rem;
-}
-
-.docs-card p {
-  margin: 0;
-  color: var(--docs-muted);
-}
-
-.docs-extra {
-  margin-top: 28px;
-}
-
-@media (max-width: 1040px) {
-  .docs-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .docs-side-nav,
-  .docs-toc {
-    position: static;
-    max-height: none;
-  }
-
-  .docs-side-nav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 720px) {
-  .docs-header {
-    display: block;
-  }
-
-  .docs-top-links {
-    justify-content: flex-start;
-    margin-top: 16px;
-  }
-
-  .docs-side-nav,
-  .docs-card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .docs-content {
-    padding: 18px 14px;
-  }
-
-  .docs-content h1 {
-    font-size: 2rem;
-  }
-}
-`;
 }
 
 async function fileExists(filePath) {
@@ -653,16 +366,17 @@ async function renderDocPage(doc) {
   const markdown = await readFile(sourcePath, "utf8");
   const rendered = renderMarkdown(markdown);
   const targetDirectory = outputDirectoryForSource(doc.source);
-  const title = doc.title;
 
   await mkdir(targetDirectory, { recursive: true });
   await writeFile(
     path.join(targetDirectory, "index.html"),
     pageShell({
-      title,
-      description: doc.description ?? "Generated HTML documentation for form-schema-runtime.",
+      title: doc.title,
+      description: doc.description,
       body: rendered.html,
-      toc: renderToc(rendered.headings)
+      toc: renderToc(rendered.headings),
+      currentSource: doc.source,
+      canonicalPath: pageHref(doc.source)
     }),
     "utf8"
   );
@@ -677,7 +391,8 @@ try {
 
 await rm(docsTargetRoot, { recursive: true, force: true });
 await mkdir(path.join(docsTargetRoot, "assets"), { recursive: true });
-await writeFile(path.join(docsTargetRoot, "assets", "docs.css"), docsStyles(), "utf8");
+await copyFile(docsStylesSource, path.join(docsTargetRoot, "assets", "docs.css"));
+await copyFile(docsNavigationSource, path.join(docsTargetRoot, "assets", "navigation.js"));
 await writeFile(path.join(docsTargetRoot, "index.html"), renderIndexPage(), "utf8");
 
 for (const doc of [...primaryDocs, ...supplementalDocs]) {

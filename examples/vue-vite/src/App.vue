@@ -229,20 +229,31 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="example-shell">
-    <section>
+  <a class="example-skip-link" href="#example-content">Skip to example</a>
+  <header class="example-header">
+    <div class="example-header-inner">
       <p class="eyebrow">Vue consumer app</p>
       <h1>Form Schema Runtime in Vue</h1>
       <p>
-        Vue provides the container and lifecycle. The runtime renders validation, conditions, custom fields,
-        and form state inside the themed container below.
+        Vue owns the page and lifecycle. The runtime owns the generated form, validation, conditions, custom
+        renderer, and field state.
       </p>
-    </section>
+    </div>
+    <nav class="example-nav" aria-label="Project and framework examples">
+      <a href="../../">Demo</a>
+      <a href="../../docs/">Docs</a>
+      <a href="../../api/">API</a>
+      <a href="../react/">React</a>
+      <a href="../vue/" aria-current="page">Vue</a>
+      <a href="../angular/">Angular</a>
+    </nav>
+  </header>
 
-    <section class="integration-note" aria-label="Vue integration notes">
-      <strong>Integration pattern:</strong> keep Vue responsible for page state and submit output, and let the
-      runtime own the generated form controls.
-    </section>
+  <main id="example-content" class="example-shell">
+    <p class="integration-note">
+      <strong>Integration pattern:</strong> mount in <code>onMounted</code>, keep Vue state at the page boundary,
+      and destroy the runtime in <code>onUnmounted</code>.
+    </p>
 
     <section class="runtime-theme" aria-label="Runtime-owned form">
       <div ref="containerRef"></div>
@@ -251,12 +262,12 @@ onUnmounted(() => {
     <section class="output-grid" aria-label="Example output">
       <article class="result-panel" aria-live="polite">
         <h2>Submit result</h2>
-        <pre>{{ submitResult ? JSON.stringify(submitResult, null, 2) : "Submit a valid form." }}</pre>
+        <pre tabindex="0">{{ submitResult ? JSON.stringify(submitResult, null, 2) : "Submit a valid form." }}</pre>
       </article>
 
       <article class="result-panel" aria-live="polite">
         <h2>Runtime state</h2>
-        <pre>{{ stateSummary }}</pre>
+        <pre tabindex="0">{{ stateSummary }}</pre>
       </article>
     </section>
   </main>

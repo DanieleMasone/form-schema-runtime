@@ -32,14 +32,6 @@ export function el<K extends keyof HTMLElementTagNameMap>(
   return element;
 }
 
-export function externalLink(label: string, href: string): HTMLAnchorElement {
-  return el("a", {
-    className: "demo-link",
-    text: label,
-    attributes: { href }
-  });
-}
-
 export function formatJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }

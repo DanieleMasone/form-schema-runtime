@@ -6,7 +6,7 @@ const coverageBaseCss = new URL("base.css", coverageTarget);
 const responsiveCoverageCss = `
 
 /* GitHub Pages mobile guard for the generated Istanbul coverage report. */
-@media only screen and (max-width: 640px) {
+@media only screen and (max-width: 900px) {
   html,
   body,
   .wrapper,

@@ -234,36 +234,51 @@ export function App() {
   }, [schema]);
 
   return (
-    <main className="example-shell">
-      <section>
-        <p className="eyebrow">React consumer app</p>
-        <h1>Form Schema Runtime in React</h1>
-        <p>
-          React provides the container and lifecycle. The runtime renders validation, conditions, custom
-          fields, and form state inside the themed container below.
+    <>
+      <a className="example-skip-link" href="#example-content">
+        Skip to example
+      </a>
+      <header className="example-header">
+        <div className="example-header-inner">
+          <p className="eyebrow">React consumer app</p>
+          <h1>Form Schema Runtime in React</h1>
+          <p>
+            React owns the page and lifecycle. The runtime owns the generated form, validation, conditions,
+            custom renderer, and field state.
+          </p>
+        </div>
+        <nav className="example-nav" aria-label="Project and framework examples">
+          <a href="../../">Demo</a>
+          <a href="../../docs/">Docs</a>
+          <a href="../../api/">API</a>
+          <a href="../react/" aria-current="page">React</a>
+          <a href="../vue/">Vue</a>
+          <a href="../angular/">Angular</a>
+        </nav>
+      </header>
+
+      <main id="example-content" className="example-shell">
+        <p className="integration-note">
+          <strong>Integration pattern:</strong> mount once in an effect, keep React state at the page boundary,
+          and destroy the runtime during effect cleanup.
         </p>
-      </section>
 
-      <section className="integration-note" aria-label="React integration notes">
-        <strong>Integration pattern:</strong> keep React responsible for page state and submit output, and let
-        the runtime own the generated form controls.
-      </section>
+        <section className="runtime-theme" aria-label="Runtime-owned form">
+          <div ref={containerRef} />
+        </section>
 
-      <section className="runtime-theme" aria-label="Runtime-owned form">
-        <div ref={containerRef} />
-      </section>
+        <section className="output-grid" aria-label="Example output">
+          <article className="result-panel" aria-live="polite">
+            <h2>Submit result</h2>
+            <pre tabIndex={0}>{submitResult ? JSON.stringify(submitResult, null, 2) : "Submit a valid form."}</pre>
+          </article>
 
-      <section className="output-grid" aria-label="Example output">
-        <article className="result-panel" aria-live="polite">
-          <h2>Submit result</h2>
-          <pre>{submitResult ? JSON.stringify(submitResult, null, 2) : "Submit a valid form."}</pre>
-        </article>
-
-        <article className="result-panel" aria-live="polite">
-          <h2>Runtime state</h2>
-          <pre>{stateSummary}</pre>
-        </article>
-      </section>
-    </main>
+          <article className="result-panel" aria-live="polite">
+            <h2>Runtime state</h2>
+            <pre tabIndex={0}>{stateSummary}</pre>
+          </article>
+        </section>
+      </main>
+    </>
   );
 }

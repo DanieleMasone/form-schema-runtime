@@ -5,8 +5,7 @@ export default defineConfig({
   base: process.env.NODE_ENV === "production" ? "/form-schema-runtime/" : "/",
   build: {
     outDir: "dist-demo",
-    emptyOutDir: true,
-    sourcemap: true
+    emptyOutDir: true
   },
   server: {
     host: "127.0.0.1",

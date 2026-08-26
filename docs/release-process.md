@@ -10,17 +10,18 @@ The published npm history is:
 - `0.1.0` was published manually.
 - `0.1.1` was published through the GitHub Release workflow with npm Trusted Publishing/OIDC.
 - `1.0.0` is the first stable npm release.
+- `1.0.1` is the current published npm release.
 
 npm package versions are immutable. Re-running an existing release workflow cannot overwrite an already published version such as `form-schema-runtime@0.1.0` or `form-schema-runtime@0.1.1`; npm will reject the publish with an error that the version was previously published.
 
 Do not rerun an existing release expecting npm to overwrite the package. Do not unpublish published versions, delete GitHub Releases, force-push tags, or create replacement tags unless explicitly requested by the repository owner.
 
-The stable release used the package version and matching GitHub Release tag:
+The first stable release used the package version and matching GitHub Release tag:
 
 - package version: `1.0.0`
 - GitHub Release tag: `v1.0.0`
 
-Future versions must also keep `package.json` and the GitHub Release tag aligned, for example package version `1.0.1` with tag `v1.0.1`. Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
+Every release must keep `package.json` and the GitHub Release tag aligned: package version `<version>` requires tag `v<version>`. Future versions must be published through GitHub Release + npm Trusted Publishing/OIDC. The release workflow checks npm before publishing and fails early if the package version already exists.
 
 ## npm README Lifecycle
 

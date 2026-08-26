@@ -31,7 +31,8 @@ const examples = [
       /departmentBadgeRenderer/,
       /validators:/,
       /renderers:/,
-      /--fsr-color-primary/
+      /shared\.css/,
+      /--example-accent/
     ]
   },
   {
@@ -51,7 +52,8 @@ const examples = [
       /departmentBadgeRenderer/,
       /validators:/,
       /renderers:/,
-      /--fsr-color-primary/
+      /shared\.css/,
+      /--example-accent/
     ]
   },
   {
@@ -82,7 +84,8 @@ const examples = [
       /departmentBadgeRenderer/,
       /validators:/,
       /renderers:/,
-      /--fsr-color-primary/
+      /shared\.css/,
+      /--example-accent/
     ]
   }
 ];
@@ -137,6 +140,11 @@ function assertDependencySet(packageJson, names, dependencyKind, exampleDirector
 
 assert(existsSync(examplesRoot), "examples/ directory is missing.");
 assert(existsSync(path.join(examplesRoot, "README.md")), "examples/README.md is missing.");
+assert(existsSync(path.join(examplesRoot, "shared.css")), "examples/shared.css is missing.");
+
+const sharedStyles = readFileSync(path.join(examplesRoot, "shared.css"), "utf8");
+assert(sharedStyles.includes("--fsr-color-primary"), "Shared example styles must theme the public runtime CSS.");
+assert(sharedStyles.includes(".example-nav"), "Shared example styles must provide the common example navigation.");
 
 const rootPackageJson = readJson(path.join(repositoryRoot, "package.json"));
 assert(

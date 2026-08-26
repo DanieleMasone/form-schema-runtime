@@ -53,9 +53,12 @@
 - Framework examples must not be included in npm package contents.
 - Framework examples must not add React, Vue, Angular, Svelte, or other framework dependencies to the core runtime package.
 - Use `npm run build:examples` to build framework examples into `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/` for Pages; never commit those generated outputs.
+- Keep Pages presentation assets in `demo/styles.css`, `site-docs/`, and `examples/shared.css`; do not move site navigation or portfolio styling into the distributed runtime stylesheet.
+- Generated Pages documentation must preserve page-specific metadata, current-page navigation, keyboard-scrollable code and tables, and compact disclosure navigation on mobile.
 - Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
 - Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.
+- Keep Pages verification and deployment separate: deployment must depend on the successful verification job, run only for pushes to the default branch, and use least-privilege Pages permissions.
 - Run the consumer smoke test before any public release: `npm run test:consumer`.
 - Keep TypeScript and TypeDoc on an officially supported pairing. Do not rely on a passing build when TypeDoc's declared peer range excludes the TypeScript version.
 - Do not add matrix builds unless there is a demonstrated compatibility reason.

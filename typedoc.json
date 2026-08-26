@@ -8,7 +8,9 @@
   "excludeInternal": true,
   "includeVersion": true,
   "navigationLinks": {
+    "Documentation": "https://danielemasone.github.io/form-schema-runtime/docs/",
     "Live demo": "https://danielemasone.github.io/form-schema-runtime/",
+    "npm": "https://www.npmjs.com/package/form-schema-runtime",
     "GitHub": "https://github.com/DanieleMasone/form-schema-runtime"
   }
 }

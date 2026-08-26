@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages-${{ github.ref }}
@@ -20,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -53,7 +51,7 @@ jobs:
         run: npm run build:examples
 
       - name: Consumer smoke test
-        run: npm run test:consumer
+        run: npm run test:consumer -- --skip-build
 
       - name: Example Pages check
         run: npm run test:examples
@@ -64,16 +62,28 @@ jobs:
       - name: Playwright tests
         run: npm run test:e2e
 
-      - name: Configure Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v6
-
       - name: Upload Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist-demo
 
+  deploy-pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
       - name: Deploy Pages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: deployment
         uses: actions/deploy-pages@v5

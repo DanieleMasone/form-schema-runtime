@@ -100,20 +100,31 @@ const departmentBadgeRenderer: FieldRenderer = (context) => {
   selector: "app-root",
   standalone: true,
   template: `
-    <main class="example-shell">
-      <section>
+    <a class="example-skip-link" href="#example-content">Skip to example</a>
+    <header class="example-header">
+      <div class="example-header-inner">
         <p class="eyebrow">Angular consumer app</p>
         <h1>Form Schema Runtime in Angular</h1>
         <p>
-          Angular provides the standalone component and lifecycle. The runtime renders validation,
-          conditions, custom fields, and form state inside the themed container below.
+          Angular owns the standalone component and lifecycle. The runtime owns the generated form,
+          validation, conditions, custom renderer, and field state.
         </p>
-      </section>
+      </div>
+      <nav class="example-nav" aria-label="Project and framework examples">
+        <a href="../../">Demo</a>
+        <a href="../../docs/">Docs</a>
+        <a href="../../api/">API</a>
+        <a href="../react/">React</a>
+        <a href="../vue/">Vue</a>
+        <a href="../angular/" aria-current="page">Angular</a>
+      </nav>
+    </header>
 
-      <section class="integration-note" aria-label="Angular integration notes">
-        <strong>Integration pattern:</strong> this is not an Angular adapter. Angular owns page state and
-        submit output, while the runtime owns the generated form controls.
-      </section>
+    <main id="example-content" class="example-shell">
+      <p class="integration-note">
+        <strong>Integration pattern:</strong> mount after the view exists, keep Angular state at the page
+        boundary, and destroy the runtime in <code>ngOnDestroy</code>.
+      </p>
 
       <section class="runtime-theme" aria-label="Runtime-owned form">
         <div #formHost></div>
@@ -122,12 +133,12 @@ const departmentBadgeRenderer: FieldRenderer = (context) => {
       <section class="output-grid" aria-label="Example output">
         <article class="result-panel" aria-live="polite">
           <h2>Submit result</h2>
-          <pre>{{ submitResultText }}</pre>
+          <pre tabindex="0">{{ submitResultText }}</pre>
         </article>
 
         <article class="result-panel" aria-live="polite">
           <h2>Runtime state</h2>
-          <pre>{{ stateSummaryText }}</pre>
+          <pre tabindex="0">{{ stateSummaryText }}</pre>
         </article>
       </section>
     </main>
