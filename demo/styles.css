@@ -288,7 +288,7 @@ pre[tabindex]:focus-visible {
 
 .demo-control label,
 .demo-switch,
-.demo-status {
+.demo-status-label {
   color: var(--demo-muted);
   font-size: 0.82rem;
   font-weight: 750;
@@ -321,11 +321,22 @@ pre[tabindex]:focus-visible {
 .demo-status {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
   margin-left: auto;
   padding: 0.5rem 0.7rem;
   border-left: 3px solid var(--demo-accent);
   background: var(--demo-surface);
+}
+
+.demo-status-label {
+  white-space: nowrap;
+}
+
+.demo-status-value {
+  color: var(--demo-text);
+  font: inherit;
+  font-weight: 800;
 }
 
 .demo-workspace {

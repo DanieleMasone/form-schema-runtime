@@ -7,6 +7,8 @@
   "excludeProtected": true,
   "excludeInternal": true,
   "includeVersion": true,
+  "favicon": "site-docs/public/favicon.svg",
+  "hostedBaseUrl": "https://danielemasone.github.io/form-schema-runtime/api/",
   "navigationLinks": {
     "Documentation": "https://danielemasone.github.io/form-schema-runtime/docs/",
     "Live demo": "https://danielemasone.github.io/form-schema-runtime/",

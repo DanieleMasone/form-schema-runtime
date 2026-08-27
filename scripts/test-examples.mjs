@@ -19,6 +19,8 @@ const examples = [
     directory: "react-vite",
     pagesRoute: "react",
     pagesBase: "/form-schema-runtime/examples/react/",
+    indexFile: "index.html",
+    pageTitle: "React Example | Form Schema Runtime",
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.tsx", "src/main.tsx"],
     requiredDependencies: ["form-schema-runtime", "react", "react-dom"],
     requiredDevDependencies: ["@vitejs/plugin-react", "typescript", "vite"],
@@ -39,6 +41,8 @@ const examples = [
     directory: "vue-vite",
     pagesRoute: "vue",
     pagesBase: "/form-schema-runtime/examples/vue/",
+    indexFile: "index.html",
+    pageTitle: "Vue Example | Form Schema Runtime",
     requiredFiles: ["index.html", "package.json", "README.md", "src/App.vue", "src/main.ts"],
     requiredDependencies: ["form-schema-runtime", "vue"],
     requiredDevDependencies: ["@vitejs/plugin-vue", "typescript", "vite", "vue-tsc"],
@@ -60,6 +64,8 @@ const examples = [
     directory: "angular",
     pagesRoute: "angular",
     pagesBase: "/form-schema-runtime/examples/angular/",
+    indexFile: "src/index.html",
+    pageTitle: "Angular Example | Form Schema Runtime",
     requiredFiles: [
       "angular.json",
       "package.json",
@@ -138,6 +144,30 @@ function assertDependencySet(packageJson, names, dependencyKind, exampleDirector
   });
 }
 
+function assertPublicMetadata(html, example, label) {
+  const canonicalUrl = `https://danielemasone.github.io${example.pagesBase}`;
+
+  assert(
+    html.includes('rel="icon" type="image/svg+xml" href="/form-schema-runtime/favicon.svg"'),
+    `${label} must include the shared Pages favicon.`
+  );
+  assert(html.includes(`rel="canonical" href="${canonicalUrl}"`), `${label} must include its canonical URL.`);
+  assert(html.includes('property="og:type" content="website"'), `${label} must declare its Open Graph type.`);
+  assert(
+    html.includes('property="og:site_name" content="form-schema-runtime"'),
+    `${label} must identify its Open Graph site.`
+  );
+  assert(
+    html.includes(`property="og:title" content="${example.pageTitle}"`),
+    `${label} must include its Open Graph title.`
+  );
+  assert(
+    /<meta\s+property="og:description"\s+content="[^"]+"\s*\/?>/u.test(html),
+    `${label} must include an Open Graph description.`
+  );
+  assert(html.includes(`property="og:url" content="${canonicalUrl}"`), `${label} Open Graph URL must match its canonical URL.`);
+}
+
 assert(existsSync(examplesRoot), "examples/ directory is missing.");
 assert(existsSync(path.join(examplesRoot, "README.md")), "examples/README.md is missing.");
 assert(existsSync(path.join(examplesRoot, "shared.css")), "examples/shared.css is missing.");
@@ -163,6 +193,7 @@ examples.forEach((example) => {
 
   const packageJson = readJson(manifestPath);
   const sourceText = readTextFiles(exampleRoot);
+  const sourceIndexHtml = readFileSync(path.join(exampleRoot, example.indexFile), "utf8");
   const packageDependency = packageJson.dependencies?.["form-schema-runtime"];
 
   assert(packageJson.private === true, `${example.directory} must be private.`);
@@ -190,6 +221,7 @@ examples.forEach((example) => {
   example.requiredPatterns.forEach((pattern) => {
     assert(pattern.test(sourceText), `${example.directory} is missing required integration pattern ${pattern}.`);
   });
+  assertPublicMetadata(sourceIndexHtml, example, `${example.directory} source page`);
 });
 
 if (shouldVerifyPages) {
@@ -210,6 +242,7 @@ if (shouldVerifyPages) {
         indexHtml.includes(example.pagesBase),
         `${example.directory} Pages output must use base path ${example.pagesBase}.`
       );
+      assertPublicMetadata(indexHtml, example, `${example.directory} Pages output`);
     }
   });
 }

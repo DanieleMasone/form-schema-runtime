@@ -77,6 +77,12 @@ async function expectPrimaryTargets(page: Page, selector: string): Promise<void>
 async function exerciseFrameworkExample(page: Page, route: string, frameworkName: string): Promise<void> {
   await page.goto(route);
 
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/form-schema-runtime/favicon.svg");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    "content",
+    `${frameworkName} Example | Form Schema Runtime`
+  );
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", new RegExp(`${route}$`));
   await expect(page.getByRole("heading", { name: `Form Schema Runtime in ${frameworkName}` })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Enterprise access request" })).toBeVisible();
   await expect(page.locator(".department-picker")).toBeVisible();
@@ -121,6 +127,19 @@ test("demo presents installation, product navigation, and schema switching", asy
   await page.goto("/");
 
   await expect(page).toHaveTitle("Form Schema Runtime | Interactive Demo");
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/form-schema-runtime/favicon.svg");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://danielemasone.github.io/form-schema-runtime/"
+  );
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+    "content",
+    "Form Schema Runtime | Interactive Demo"
+  );
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+    "content",
+    "https://danielemasone.github.io/form-schema-runtime/"
+  );
   await expect(page.getByRole("heading", { name: "Form Schema Runtime", exact: true })).toBeVisible();
   await expect(page.getByText("npm install form-schema-runtime", { exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "npm v1.0.1" })).toHaveAttribute(
@@ -142,6 +161,8 @@ test("demo presents installation, product navigation, and schema switching", asy
 
   await expect(page.getByRole("heading", { name: "Customer onboarding" })).toBeVisible();
   await expect(page.getByText("Active schema", { exact: true })).toBeVisible();
+  await expect(page.getByText("Form activity", { exact: true })).toBeVisible();
+  await expect(page.locator('output[aria-labelledby="demo-status-label"]')).toHaveText("Ready");
 
   await page.getByLabel("Example schema").selectOption("enterprise-access-request");
   await expect(page.getByRole("heading", { name: "Enterprise access request" })).toBeVisible();
@@ -190,12 +211,20 @@ test("documentation routes expose useful navigation and mobile reading controls"
   await page.goto("docs/");
   await expect(page.getByRole("heading", { name: "Documentation", level: 1 })).toBeVisible();
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Guides and references/);
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/form-schema-runtime/favicon.svg");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Documentation | form-schema-runtime");
 
   for (const [route, heading, navigationLabel] of docs) {
     await page.goto(route);
     await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
     await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /\S+/);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", new RegExp(`${route}$`));
+    await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", "/form-schema-runtime/favicon.svg");
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
+      "content",
+      `${navigationLabel} | form-schema-runtime`
+    );
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", new RegExp(`${route}$`));
     await expect(
       page.getByRole("navigation", { name: "Documentation" }).getByRole("link", { name: navigationLabel, exact: true })
     ).toHaveAttribute("aria-current", "page");
@@ -227,16 +256,19 @@ test("generated API docs and coverage work at every supported viewport", async (
   test.setTimeout(90_000);
   const consoleErrors = collectConsoleErrors(page);
   const routes = [
-    { route: "api/", heading: /form-schema-runtime - v1\.0\.1/ },
-    { route: "coverage/", heading: "All files" }
+    { route: "api/", heading: /form-schema-runtime - v1\.0\.1/, canonical: /\/api\/$/, favicon: /favicon\.svg$/ },
+    { route: "coverage/", heading: "All files", canonical: /\/coverage\/$/, favicon: /favicon\.png$/ }
   ] as const;
 
   for (const viewport of supportedViewports) {
     await page.setViewportSize(viewport);
 
-    for (const { route, heading } of routes) {
+    for (const { route, heading, canonical, favicon } of routes) {
       await page.goto(route);
       await expect(page.getByRole("heading", { name: heading, level: 1 })).toBeVisible();
+      await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /\S+/);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+      await expect(page.locator('link[rel~="icon"]')).toHaveAttribute("href", favicon);
       await expectNoHorizontalOverflow(page);
 
       if (route === "coverage/" && viewport.width <= 900) {
@@ -359,15 +391,20 @@ test("enterprise access request exercises readonly, disabled, and conditional fi
 
 test("reset and dark mode update the demo", async ({ page }) => {
   await page.goto("/");
+  const activityStatus = page.locator('output[aria-labelledby="demo-status-label"]');
+
+  await expect(activityStatus).toHaveText("Ready");
 
   await page.getByRole("button", { name: "Create customer" }).click();
   await expect(page.getByText("There is a problem with this form")).toBeVisible();
+  await expect(activityStatus).toHaveText("Validation required");
 
   await page.getByLabel("First name *").fill("Ada");
-  await expect(page.getByText("Unsaved changes")).toBeVisible();
+  await expect(activityStatus).toHaveText("Unsaved changes");
   await page.getByRole("button", { name: "Clear" }).click();
 
   await expect(page.getByLabel("First name *")).toHaveValue("");
+  await expect(activityStatus).toHaveText("Reset");
   await expect(page.getByText("There is a problem with this form")).toBeHidden();
   await page.getByRole("tab", { name: "Errors" }).click();
   await expect(page.getByRole("tabpanel")).toHaveText("{}");

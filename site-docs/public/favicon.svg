@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>form-schema-runtime</title>
+  <rect width="64" height="64" rx="12" fill="#0f6c67" />
+  <rect x="14" y="10" width="36" height="44" rx="5" fill="#ffffff" />
+  <circle cx="23" cy="23" r="3" fill="#c56800" />
+  <path d="M30 23h12M30 32h12M30 41h12" fill="none" stroke="#18352f" stroke-linecap="round" stroke-width="4" />
+  <path d="m20 32 2 2 4-5" fill="none" stroke="#0f6c67" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" />
+  <circle cx="23" cy="41" r="3" fill="#c56800" />
+</svg>

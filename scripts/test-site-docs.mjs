@@ -6,6 +6,7 @@ const repositoryRoot = fileURLToPath(new URL("..", import.meta.url));
 const docsRoot = path.join(repositoryRoot, "dist-demo", "docs");
 const docsStylesSource = path.join(repositoryRoot, "site-docs", "docs.css");
 const docsNavigationSource = path.join(repositoryRoot, "site-docs", "navigation.js");
+const faviconTarget = path.join(repositoryRoot, "dist-demo", "favicon.svg");
 const requiredPages = [
   "index.html",
   "usage-guide/index.html",
@@ -67,11 +68,48 @@ function resolveLocalSiteTarget(href) {
     : path.join(repositoryRoot, "dist-demo", relativePath);
 }
 
+function expectedCanonicalUrl(rootDirectory, filePath, publicBaseUrl) {
+  const relativePath = path.relative(rootDirectory, filePath).split(path.sep).join("/");
+  const canonicalPath =
+    relativePath === "index.html"
+      ? ""
+      : relativePath.endsWith("/index.html")
+        ? relativePath.slice(0, -"index.html".length)
+        : relativePath;
+
+  return new URL(canonicalPath, publicBaseUrl).href;
+}
+
+function verifyGeneratedArea({ label, rootDirectory, publicBaseUrl, faviconPattern }) {
+  assert(existsSync(rootDirectory), `${label} output is missing.`);
+
+  if (!existsSync(rootDirectory)) {
+    return;
+  }
+
+  walkFiles(rootDirectory)
+    .filter((filePath) => filePath.endsWith(".html"))
+    .forEach((filePath) => {
+      const html = readFileSync(filePath, "utf8");
+      const canonicalUrl = expectedCanonicalUrl(rootDirectory, filePath, publicBaseUrl);
+
+      assert(/<html[^>]+lang="en"/u.test(html), `${label} page must declare English language: ${filePath}.`);
+      assert(html.includes('meta name="viewport"'), `${label} page must include viewport metadata: ${filePath}.`);
+      assert(html.includes('meta name="description"'), `${label} page must include a description: ${filePath}.`);
+      assert(faviconPattern.test(html), `${label} page must include a favicon: ${filePath}.`);
+      assert(
+        html.includes(`rel="canonical" href="${canonicalUrl}"`),
+        `${label} page must use its exact public canonical URL ${canonicalUrl}: ${filePath}.`
+      );
+    });
+}
+
 if (!existsSync(docsRoot)) {
   fail("dist-demo/docs is missing. Run npm run build before npm run test:site-docs.");
 } else {
   assert(existsSync(docsStylesSource), "site-docs/docs.css is missing.");
   assert(existsSync(docsNavigationSource), "site-docs/navigation.js is missing.");
+  assert(existsSync(faviconTarget), "dist-demo/favicon.svg is missing.");
 
   requiredPages.forEach((page) => {
     const pagePath = path.join(docsRoot, page);
@@ -96,8 +134,21 @@ if (!existsSync(docsRoot)) {
       assert(html.includes('meta name="viewport"'), `Generated docs page must include viewport metadata: ${filePath}.`);
       assert(html.includes('meta name="description"'), `Generated docs page must include a description: ${filePath}.`);
       assert(
+        html.includes('rel="icon" type="image/svg+xml" href="/form-schema-runtime/favicon.svg"'),
+        `Generated docs page must include the shared favicon: ${filePath}.`
+      );
+      assert(
         html.includes('rel="canonical" href="https://danielemasone.github.io/form-schema-runtime/docs/'),
         `Generated docs page must include a Pages canonical URL: ${filePath}.`
+      );
+      assert(html.includes('property="og:type" content="website"'), `Generated docs page must declare its Open Graph type: ${filePath}.`);
+      assert(html.includes('property="og:site_name" content="form-schema-runtime"'), `Generated docs page must identify its Open Graph site: ${filePath}.`);
+      assert(html.includes('property="og:title" content="'), `Generated docs page must include an Open Graph title: ${filePath}.`);
+      assert(html.includes('property="og:description" content="'), `Generated docs page must include an Open Graph description: ${filePath}.`);
+      const canonicalUrl = html.match(/rel="canonical" href="([^"]+)"/u)?.[1];
+      assert(
+        canonicalUrl !== undefined && html.includes(`property="og:url" content="${canonicalUrl}"`),
+        `Generated docs page Open Graph URL must match its canonical URL: ${filePath}.`
       );
       assert(html.includes('<main id="content"'), `Generated docs page must expose the main content landmark: ${filePath}.`);
       assert(html.includes('class="docs-navigation"'), `Generated docs page must include responsive docs navigation: ${filePath}.`);
@@ -169,6 +220,23 @@ if (!existsSync(docsRoot)) {
     "Generated docs navigation must be copied from site-docs/navigation.js without divergence."
   );
 }
+
+if (process.exitCode) {
+  process.exit();
+}
+
+verifyGeneratedArea({
+  label: "TypeDoc",
+  rootDirectory: path.join(repositoryRoot, "dist-demo", "api"),
+  publicBaseUrl: "https://danielemasone.github.io/form-schema-runtime/api/",
+  faviconPattern: /rel="icon" href="[^"]*favicon\.svg"/u
+});
+verifyGeneratedArea({
+  label: "Coverage",
+  rootDirectory: path.join(repositoryRoot, "dist-demo", "coverage"),
+  publicBaseUrl: "https://danielemasone.github.io/form-schema-runtime/coverage/",
+  faviconPattern: /rel="shortcut icon"[^>]+href="[^"]*favicon\.png"/u
+});
 
 if (process.exitCode) {
   process.exit();

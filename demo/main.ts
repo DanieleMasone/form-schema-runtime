@@ -200,10 +200,16 @@ const schemaLabel = el("label", { text: "Example schema", attributes: { for: "de
 const schemaSelect = el("select", { attributes: { id: "demo-schema-select" } });
 const darkToggleLabel = el("label", { className: "demo-switch" });
 const darkToggle = el("input", { attributes: { id: "demo-dark-mode", type: "checkbox" } });
-const statusText = el("span", {
-  className: "demo-status",
-  text: "Idle",
-  attributes: { role: "status", "aria-live": "polite" }
+const activityStatus = el("div", { className: "demo-status" });
+const activityStatusLabel = el("span", {
+  className: "demo-status-label",
+  text: "Form activity",
+  attributes: { id: "demo-status-label" }
+});
+const statusText = el("output", {
+  className: "demo-status-value",
+  text: "Ready",
+  attributes: { "aria-labelledby": "demo-status-label", "aria-live": "polite" }
 });
 const workspace = el("section", {
   className: "demo-workspace",
@@ -258,7 +264,8 @@ inspectorDefinitions.forEach(({ key, label }, index) => {
 
 darkToggleLabel.append(darkToggle, document.createTextNode("Dark mode"));
 schemaControl.append(schemaLabel, schemaSelect);
-toolbar.append(toolbarHeading, schemaControl, darkToggleLabel, statusText);
+activityStatus.append(activityStatusLabel, statusText);
+toolbar.append(toolbarHeading, schemaControl, darkToggleLabel, activityStatus);
 inspectorHeader.append(el("h2", { text: "Live inspector" }), inspectorTabs);
 inspectorPanel.append(inspectorHeader, inspectorCode);
 schemaDetails.append(schemaSummary, schemaCode);
@@ -363,7 +370,7 @@ function renderActiveForm(): void {
   latestState = null;
   latestSubmit = null;
   activeInspector = "values";
-  statusText.textContent = "Idle";
+  statusText.textContent = "Ready";
   updateExplanation();
 
   form = createForm({
@@ -383,7 +390,7 @@ function renderActiveForm(): void {
       }
     },
     onChange(_values, state) {
-      statusText.textContent = state.dirtyFields.length > 0 ? "Unsaved changes" : "Idle";
+      statusText.textContent = state.dirtyFields.length > 0 ? "Unsaved changes" : "Ready";
       updateInspectors(state);
     },
     onSubmit(values, state) {

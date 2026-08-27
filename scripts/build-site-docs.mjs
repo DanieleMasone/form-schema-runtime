@@ -278,6 +278,8 @@ function renderToc(headings) {
 
 function pageShell({ title, description, body, toc = "", currentSource, canonicalPath }) {
   const mainClass = toc ? "docs-main docs-main--with-toc" : "docs-main";
+  const pageTitle = `${title} | form-schema-runtime`;
+  const canonicalUrl = `${siteOrigin}${canonicalPath}`;
 
   return `<!doctype html>
 <html lang="en">
@@ -285,8 +287,14 @@ function pageShell({ title, description, body, toc = "", currentSource, canonica
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="${escapeHtml(description)}" />
-    <link rel="canonical" href="${siteOrigin}${canonicalPath}" />
-    <title>${escapeHtml(title)} | form-schema-runtime</title>
+    <link rel="icon" type="image/svg+xml" href="${siteBase}favicon.svg" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="form-schema-runtime" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <title>${escapeHtml(pageTitle)}</title>
     <link rel="stylesheet" href="${siteBase}docs/assets/docs.css" />
     <script type="module" src="${siteBase}docs/assets/navigation.js"></script>
   </head>
