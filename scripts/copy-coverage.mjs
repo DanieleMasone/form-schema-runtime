@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 const coverageSource = new URL("../coverage/", import.meta.url);
 const coverageTarget = new URL("../dist-demo/coverage/", import.meta.url);
 const coverageBaseCss = new URL("base.css", coverageTarget);
+const coverageSummary = new URL("coverage-summary.json", coverageSource);
+const coverageBadgesTarget = new URL("../dist-demo/badges/", import.meta.url);
+const coverageBadgeTarget = new URL("coverage.json", coverageBadgesTarget);
 const coverageTargetPath = fileURLToPath(coverageTarget);
 const coverageCanonicalBase = "https://danielemasone.github.io/form-schema-runtime/coverage/";
 const coverageDescription = "Vitest code coverage report for form-schema-runtime.";
@@ -38,6 +41,45 @@ const responsiveCoverageCss = `
   }
 }
 `;
+
+function coverageColor(percentage) {
+  if (percentage >= 90) {
+    return "brightgreen";
+  }
+
+  if (percentage >= 80) {
+    return "green";
+  }
+
+  if (percentage >= 70) {
+    return "yellowgreen";
+  }
+
+  if (percentage >= 60) {
+    return "yellow";
+  }
+
+  return "red";
+}
+
+async function writeCoverageBadge() {
+  const summary = JSON.parse(await readFile(coverageSummary, "utf8"));
+  const linesPercentage = summary?.total?.lines?.pct;
+
+  if (typeof linesPercentage !== "number" || !Number.isFinite(linesPercentage) || linesPercentage < 0 || linesPercentage > 100) {
+    throw new Error("Coverage summary must contain a numeric total.lines.pct between 0 and 100.");
+  }
+
+  const badge = {
+    schemaVersion: 1,
+    label: "coverage",
+    message: `${linesPercentage}%`,
+    color: coverageColor(linesPercentage)
+  };
+
+  await mkdir(coverageBadgesTarget, { recursive: true });
+  await writeFile(coverageBadgeTarget, `${JSON.stringify(badge, null, 2)}\n`, "utf8");
+}
 
 async function findHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -104,3 +146,5 @@ await appendFile(coverageBaseCss, responsiveCoverageCss);
 for (const htmlFile of await findHtmlFiles(coverageTargetPath)) {
   await addPageMetadata(htmlFile);
 }
+
+await writeCoverageBadge();

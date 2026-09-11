@@ -1,10 +1,8 @@
 # Form Schema Runtime
 
-[![CI](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-Library_Mode-646CFF?logo=vite)
-![Accessibility](https://img.shields.io/badge/Accessibility-First-success)
-![Framework](https://img.shields.io/badge/Framework-Agnostic-0F172A)
+[![CI](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/form-schema-runtime)](https://www.npmjs.com/package/form-schema-runtime)
+[![coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fdanielemasone.github.io%2Fform-schema-runtime%2Fbadges%2Fcoverage.json)](https://danielemasone.github.io/form-schema-runtime/coverage/)
 
 Framework-agnostic TypeScript runtime for rendering accessible, customizable HTML forms from declarative JSON schemas.
 

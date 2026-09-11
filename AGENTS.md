@@ -67,7 +67,7 @@
 - Do not commit generated TypeDoc output; it belongs in the Pages artifact.
 - Keep `npm run build` producing the library, demo, TypeDoc API docs, generated HTML docs from the Markdown sources, and coverage page when coverage has been generated.
 - Validate generated HTML documentation with `npm run test:site-docs`; Markdown under `docs/` remains the canonical source.
-- Pages artifact structure should remain root demo, `/docs/` generated HTML docs from Markdown sources, `/api/` TypeDoc, `/coverage/` Vitest coverage, and `/examples/` framework consumer builds.
+- Pages artifact structure should remain root demo, `/docs/` generated HTML docs from Markdown sources, `/api/` TypeDoc, `/coverage/` Vitest coverage, `/badges/coverage.json` generated from Vitest Lines coverage, and `/examples/` framework consumer builds.
 - Keep release publishing in a dedicated GitHub Release-triggered workflow. Use npm Trusted Publishing/OIDC rather than long-lived npm publish tokens unless trusted publishing is demonstrably unavailable.
 - Keep npm release builds package-focused: use `npm run build:lib` and do not generate demo, docs, coverage, or framework example Pages assets in the release workflow.
 - Release workflows must verify tag/version alignment, package metadata, exports, package contents, and `npm pack --dry-run` before publishing.
@@ -84,6 +84,7 @@
 ## Documentation Expectations
 
 - Keep README aligned with actual implementation.
+- Keep README badges limited to authoritative dynamic data. Never hardcode package versions, coverage percentages, build states, or decorative technology and positioning claims in badge URLs.
 - Add meaningful English JSDoc for public and semi-public runtime types, hooks, render contexts, validators, state snapshots, and errors.
 - Comment complex internal flows only where the comment explains an invariant, lifecycle edge, accessibility behavior, or cleanup responsibility.
 - Document extension points that exist today.

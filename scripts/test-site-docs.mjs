@@ -7,6 +7,11 @@ const docsRoot = path.join(repositoryRoot, "dist-demo", "docs");
 const docsStylesSource = path.join(repositoryRoot, "site-docs", "docs.css");
 const docsNavigationSource = path.join(repositoryRoot, "site-docs", "navigation.js");
 const faviconTarget = path.join(repositoryRoot, "dist-demo", "favicon.svg");
+const readmePath = path.join(repositoryRoot, "README.md");
+const coverageSummaryPath = path.join(repositoryRoot, "coverage", "coverage-summary.json");
+const coverageBadgePath = path.join(repositoryRoot, "dist-demo", "badges", "coverage.json");
+const coverageEndpointUrl = "https://danielemasone.github.io/form-schema-runtime/badges/coverage.json";
+const coverageBadgeUrl = `https://img.shields.io/endpoint?url=${encodeURIComponent(coverageEndpointUrl)}`;
 const requiredPages = [
   "index.html",
   "usage-guide/index.html",
@@ -102,6 +107,87 @@ function verifyGeneratedArea({ label, rootDirectory, publicBaseUrl, faviconPatte
         `${label} page must use its exact public canonical URL ${canonicalUrl}: ${filePath}.`
       );
     });
+}
+
+function expectedCoverageColor(percentage) {
+  if (percentage >= 90) {
+    return "brightgreen";
+  }
+
+  if (percentage >= 80) {
+    return "green";
+  }
+
+  if (percentage >= 70) {
+    return "yellowgreen";
+  }
+
+  if (percentage >= 60) {
+    return "yellow";
+  }
+
+  return "red";
+}
+
+function verifyCoverageBadge() {
+  assert(existsSync(coverageSummaryPath), "coverage/coverage-summary.json is missing.");
+  assert(existsSync(coverageBadgePath), "dist-demo/badges/coverage.json is missing.");
+
+  if (!existsSync(coverageSummaryPath) || !existsSync(coverageBadgePath)) {
+    return;
+  }
+
+  const summary = JSON.parse(readFileSync(coverageSummaryPath, "utf8"));
+  const badge = JSON.parse(readFileSync(coverageBadgePath, "utf8"));
+  const linesPercentage = summary?.total?.lines?.pct;
+
+  assert(
+    typeof linesPercentage === "number" && Number.isFinite(linesPercentage),
+    "Coverage summary must contain a numeric total.lines.pct."
+  );
+  assert(badge.schemaVersion === 1, "Coverage badge schemaVersion must be 1.");
+  assert(badge.label === "coverage", 'Coverage badge label must be "coverage".');
+  assert(badge.message === `${linesPercentage}%`, "Coverage badge must expose the generated Lines percentage.");
+  assert(badge.color === expectedCoverageColor(linesPercentage), "Coverage badge color must follow the Lines thresholds.");
+}
+
+function verifyReadmeBadges() {
+  const readme = readFileSync(readmePath, "utf8");
+  const badgeLinks = [...readme.matchAll(/\[!\[([^\]]+)\]\((https:\/\/[^)\s]+)\)\]\((https:\/\/[^)\s]+)\)/gu)].map(
+    ([, label, imageUrl, targetUrl]) => ({ label, imageUrl, targetUrl })
+  );
+  const expectedBadges = [
+    {
+      label: "CI",
+      imageUrl:
+        "https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml/badge.svg?branch=main&event=push",
+      targetUrl: "https://github.com/DanieleMasone/form-schema-runtime/actions/workflows/ci.yml"
+    },
+    {
+      label: "npm version",
+      imageUrl: "https://img.shields.io/npm/v/form-schema-runtime",
+      targetUrl: "https://www.npmjs.com/package/form-schema-runtime"
+    },
+    {
+      label: "coverage",
+      imageUrl: coverageBadgeUrl,
+      targetUrl: "https://danielemasone.github.io/form-schema-runtime/coverage/"
+    }
+  ];
+
+  assert(badgeLinks.length === expectedBadges.length, "README must contain exactly three high-signal badges.");
+  expectedBadges.forEach((expectedBadge) => {
+    assert(
+      badgeLinks.some(
+        (badge) =>
+          badge.label === expectedBadge.label &&
+          badge.imageUrl === expectedBadge.imageUrl &&
+          badge.targetUrl === expectedBadge.targetUrl
+      ),
+      `README is missing the expected dynamic ${expectedBadge.label} badge.`
+    );
+  });
+  assert(!readme.includes("img.shields.io/badge/"), "README must not contain static Shields project badges.");
 }
 
 if (!existsSync(docsRoot)) {
@@ -237,6 +323,8 @@ verifyGeneratedArea({
   publicBaseUrl: "https://danielemasone.github.io/form-schema-runtime/coverage/",
   faviconPattern: /rel="shortcut icon"[^>]+href="[^"]*favicon\.png"/u
 });
+verifyCoverageBadge();
+verifyReadmeBadges();
 
 if (process.exitCode) {
   process.exit();
