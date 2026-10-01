@@ -2,7 +2,7 @@
 
 This is a small Angular standalone consumer app for the published `form-schema-runtime` package.
 
-It uses Angular 21 so it works with the current Node 20, 22, and 24 ranges supported by Angular without requiring the newer Angular 22 Node floor.
+It uses Angular 22 and TypeScript 6. For the repository build, use Node 24 LTS (24.15 or newer) and the npm version declared in the root `packageManager`. The official Angular migration makes `ChangeDetectionStrategy.Eager` explicit to preserve the example's change detection behavior.
 
 It demonstrates an enterprise access request form with required fields, email validation, conditional privileged-access justification, a synchronous company email validator, a custom department renderer, scoped CSS variable overrides, submit output, and a compact runtime state snapshot.
 
@@ -13,7 +13,7 @@ npm install form-schema-runtime
 ```
 
 ```bash
-npm install
+npm ci
 npm run dev
 npm run build
 npm run preview

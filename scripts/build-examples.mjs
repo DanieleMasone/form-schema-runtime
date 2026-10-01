@@ -116,7 +116,7 @@ examples.forEach((example) => {
   const exampleRoot = path.join(repositoryRoot, "examples", example.directory);
 
   runNpm(
-    ["install", "--package-lock=false", "--no-audit", "--no-fund", "--cache", npmCache],
+    ["ci", "--no-audit", "--no-fund", "--cache", npmCache],
     exampleRoot,
     `Installing ${example.name} example dependencies`
   );

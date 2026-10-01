@@ -43,20 +43,20 @@ npm run build:examples
 npm run test:examples
 ```
 
-`build:examples` installs each example with `npm install --package-lock=false`, builds it with the correct GitHub Pages base path, and copies the static output to `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/`. `test:examples` checks package imports, lifecycle patterns, custom validators, custom renderers, CSS variable theming, package exclusion, and the built Pages output.
+`build:examples` installs each example with `npm ci` using its committed lockfile, builds it with the correct GitHub Pages base path, and copies the static output to `dist-demo/examples/react/`, `dist-demo/examples/vue/`, and `dist-demo/examples/angular/`. `test:examples` checks package imports, lifecycle patterns, custom validators, custom renderers, CSS variable theming, package exclusion, and the built Pages output.
 
 ## Run An Example
 
 Run commands inside one example directory:
 
 ```bash
-npm install
+npm ci
 npm run build
 npm run dev
 npm run preview
 ```
 
-Use the package manager lockfile policy of the consuming application. This repository does not commit example `node_modules`, generated build output, or package tarballs.
+Use Node 24 LTS (24.15 or newer) and the npm version declared in the root `packageManager`. Commit each example's lockfile when manually updating dependencies. This repository does not commit example `node_modules`, generated build output, or package tarballs.
 
 ## Why No Framework Adapters
 

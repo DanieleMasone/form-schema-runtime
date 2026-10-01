@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ViewChild,
@@ -99,6 +100,7 @@ const departmentBadgeRenderer: FieldRenderer = (context) => {
 @Component({
   selector: "app-root",
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <a class="example-skip-link" href="#example-content">Skip to example</a>
     <header class="example-header">

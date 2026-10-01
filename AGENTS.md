@@ -57,6 +57,8 @@
 - Generated Pages documentation must preserve page-specific metadata, current-page navigation, keyboard-scrollable code and tables, and compact disclosure navigation on mobile.
 - Prefer the latest Active LTS Node for CI. Use Current Node only when there is a concrete compatibility reason.
 - Keep the lockfile aligned with the `packageManager` version declared in `package.json`.
+- Keep a committed lockfile for each framework example; `build:examples` must install with `npm ci`.
+- Review dependency updates manually; do not add dependency bots or scheduled update workflows.
 - Keep npm, `packageManager`, and `package-lock.json` in sync; verify with `npm ci` before treating dependency work as complete.
 - Keep Pages verification and deployment separate: deployment must depend on the successful verification job, run only for pushes to the default branch, and use least-privilege Pages permissions.
 - Run the consumer smoke test before any public release: `npm run test:consumer`.

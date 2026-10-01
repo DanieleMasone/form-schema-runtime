@@ -89,6 +89,8 @@ The library renders native controls into a caller-provided container. Schema tex
 
 ## Build And Test
 
+Use Node 24 LTS (24.15 or newer for the Angular example) and the npm version declared in `packageManager`.
+
 ```bash
 npm ci
 npm run typecheck
