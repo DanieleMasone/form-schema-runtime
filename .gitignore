@@ -58,3 +58,5 @@ Desktop.ini
 *.swp
 *.swo
 *~
+/.npmrc
+/.nvmrc
